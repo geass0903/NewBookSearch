@@ -1,0 +1,14 @@
+<resources>
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_normal">8dp</dimen>
+    <dimen name="margin_large">12dp</dimen>
+
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_normal">8dp</dimen>
+    <dimen name="padding_large">12dp</dimen>
+
+    <dimen name="text_size_small">12dp</dimen>
+    <dimen name="text_size_normal">14dp</dimen>
+    <dimen name="text_size_large">16dp</dimen>
+
+</resources>

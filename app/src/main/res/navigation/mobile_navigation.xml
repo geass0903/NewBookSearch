@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_new_books">
+
+    <fragment
+        android:id="@+id/navigation_new_books"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksFragment"
+        android:label="@string/title_new_books"
+        tools:layout="@layout/fragment_new_books" />
+
+    <fragment
+        android:id="@+id/navigation_keywords"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.keywords.KeywordsFragment"
+        android:label="@string/title_keywords"
+        tools:layout="@layout/fragment_keywords" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

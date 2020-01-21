@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">新刊検索</string>
+
+    <string name="title_new_books">新刊</string>
+    <string name="title_keywords">キーワード</string>
+    <string name="title_settings">設定</string>
+    <string name="title_log_out">ログアウトしますか?</string>
+    <string name="title_edit">キーワード登録</string>
+    <string name="title_delete">キーワードを削除しますか?</string>
+
+
+    <string name="label_positive">OK</string>
+    <string name="label_negative">Cancel</string>
+    <string name="label_error">エラー</string>
+
+    <string name="error_exists">そのキーワードは既に登録されています。</string>
+    <string name="error_keyword">半角2文字または全角1文字以上。ひらがな・カタカナ・記号の場合は2文字以上</string>
+
+
+    <!-- Notification-->
+    <string name="notification_channel_id">NewBookSearch</string>
+    <string name="notification_channel_title">新刊検索</string>
+    <string name="notification_channel_description">バックグラウンド動作中</string>
+    <string name="notification_message_background_service">バックグラウンド動作中</string>
+
+    <string name="toast_success_backup">バックアップしました</string>
+    <string name="toast_success_restore">リストアしました</string>
+    <string name="toast_success_reload">更新完了しました</string>
+    <string name="toast_success_register">キーワードを登録しました</string>
+    <string name="toast_success_unregister">キーワードを削除しました</string>
+
+    <string name="progress_reload">更新中…</string>
+    <string name="progress_backup">バックアップ中…</string>
+    <string name="progress_restore">リストア中…</string>
+
+    <string name="label_sale">発売</string>
+    <string name="label_reload">更新</string>
+    <string name="label_add">追加</string>
+
+
+</resources>
