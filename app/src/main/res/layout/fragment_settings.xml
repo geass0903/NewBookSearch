@@ -1,19 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text_settings"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.settings.SettingsViewModel" />
+        <variable
+            name="fragment"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.settings.SettingsFragment" />
+    </data>
+
+
+    <ScrollView
+        android:fillViewport="true"
+        android:orientation="vertical"
+        android:background="@color/colorBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent">
+
+        <!-- Dropbox Backup/Restore-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <include layout="@layout/divider" />
+                <TextView
+                    style="@style/divider_label"
+                    android:text="@string/label_link_up_dropbox"
+                    />
+                <include layout="@layout/divider" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/button_log_in"
+                android:background="@drawable/selector_rounded_rectangle_color_primary"
+                android:drawableEnd="@drawable/ic_link_up_24dp"
+                android:text="@string/label_log_in"
+                android:visibility="@{viewModel.token == null ? View.VISIBLE :View.GONE}"
+                app:onClickListener="@{fragment.onClickListener}"
+                style="@style/settings_button"
+                />
+            <Button
+                android:id="@+id/button_log_out"
+                android:background="@drawable/selector_rounded_rectangle_color_red"
+                android:drawableEnd="@drawable/ic_link_down_24dp"
+                android:text="@string/label_log_out"
+                android:visibility="@{viewModel.token == null ? View.GONE : View.VISIBLE}"
+                app:onClickListener="@{fragment.onClickListener}"
+                style="@style/settings_button"
+                />
+            <Button
+                android:id="@+id/button_backup"
+                android:layout_marginTop="@dimen/margin_large"
+                android:background="@drawable/selector_rounded_rectangle_color_primary"
+                android:drawableEnd="@drawable/ic_backup_24dp"
+                android:text="@string/label_backup"
+                android:visibility="@{viewModel.token == null ? View.GONE : View.VISIBLE}"
+                app:onClickListener="@{fragment.onClickListener}"
+                style="@style/settings_button"
+                />
+            <Button
+                android:id="@+id/button_restore"
+                android:layout_marginTop="@dimen/margin_large"
+                android:background="@drawable/selector_rounded_rectangle_color_primary"
+                android:drawableEnd="@drawable/ic_restore_24dp"
+                android:text="@string/label_restore"
+                android:visibility="@{viewModel.token == null ? View.GONE : View.VISIBLE}"
+                app:onClickListener="@{fragment.onClickListener}"
+                style="@style/settings_button"
+                />
+        </LinearLayout>
+    </ScrollView>
+
+</layout>

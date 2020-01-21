@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.dropbox.core.android.Auth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooks
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
 
 public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener,ProgressDialogFragment.OnProgressDialogListener{
@@ -37,6 +41,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
 
     private static final String TAG_RELOAD_PROGRESS_DIALOG = "NewBooksFragment.TAG_RELOAD_PROGRESS_DIALOG";
+    private static final String TAG_JAN_CODE_DIALOG = "NewBooksFragment.TAG_JAN_CODE_DIALOG";
     private static final int REQUEST_CODE_RELOAD_PROGRESS_DIALOG = 103;
 
     private NewBooksViewModel newBooksViewModel;
@@ -76,7 +81,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     public void onResume() {
         super.onResume();
         if (D) Log.d(TAG, "onResume()");
-
     }
 
     @Override
@@ -116,6 +120,10 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         if (isClickable()) {
             if (D) Log.d(TAG, "onItemClick" + data.getIsbn());
             waitClickable(500);
+            Bundle bundle = new Bundle();
+            bundle.putString(JanCodeDialogFragment.KEY_TITLE, data.getTitle());
+            bundle.putString(JanCodeDialogFragment.KEY_ISBN, data.getIsbn());
+            JanCodeDialogFragment.showProgressDialog(this, bundle, TAG_JAN_CODE_DIALOG);
         }
     }
 
@@ -141,8 +149,10 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                             break;
                         case NewBookService.STATE_BACKGROUND_COMPLETE:
                             if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_COMPLETE");
-                            ProgressDialogFragment.dismissProgressDialog(this, TAG_RELOAD_PROGRESS_DIALOG);
                             newBooksViewModel.loadAllBooks();
+                            getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
+                            ProgressDialogFragment.dismissProgressDialog(this, TAG_RELOAD_PROGRESS_DIALOG);
+                            Toast.makeText(getContext(), getString(R.string.toast_success_reload), Toast.LENGTH_SHORT).show();
                             break;
                     }
                     break;

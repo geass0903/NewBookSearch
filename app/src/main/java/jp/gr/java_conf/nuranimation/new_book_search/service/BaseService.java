@@ -64,6 +64,14 @@ public abstract class BaseService extends Service {
         updateNotification(mState);
     }
 
+    public void checkServiceState(){
+        if (D) Log.d(TAG, "check ServiceState : " + mState);
+        Intent intent = new Intent();
+        intent.setAction(FILTER_ACTION_UPDATE_SERVICE_STATE);
+        intent.putExtra(KEY_SERVICE_STATE, mState);
+        mLocalBroadcastManager.sendBroadcast(intent);
+    }
+
     public void updateProgress(String message, String value){
         Intent intent = new Intent();
         intent.setAction(FILTER_ACTION_UPDATE_PROGRESS);

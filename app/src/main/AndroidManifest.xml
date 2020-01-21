@@ -28,6 +28,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <data android:scheme="db-sf7d9ckccl57xvf" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service android:name="jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService" />
 
     </application>

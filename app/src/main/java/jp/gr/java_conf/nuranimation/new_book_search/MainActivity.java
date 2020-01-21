@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
     }
 
     @Override
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             bindService(intent,connection, Service.BIND_AUTO_CREATE);
         }else{
             mService.cancelForeground();
+            mService.checkServiceState();
         }
     }
 

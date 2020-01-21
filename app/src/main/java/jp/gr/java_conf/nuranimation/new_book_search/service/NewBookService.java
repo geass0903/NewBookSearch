@@ -41,6 +41,7 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
     @Override
     public void onRebind(Intent intent) {
         if (D) Log.d(TAG, "onRebind");
+        checkServiceState();
     }
 
     @Override
@@ -101,6 +102,7 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
             newBooksThread = null;
         }
         setServiceState(STATE_NONE);
+        stopSelf();
     }
 
     protected Notification createNotification(int state) {

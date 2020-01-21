@@ -194,9 +194,7 @@ public class ProgressDialogFragment extends DialogFragment{
             FragmentManager manager = fragment.getFragmentManager();
             if(manager != null) {
                 Fragment findFragment = manager.findFragmentByTag(tag);
-                if (findFragment instanceof ProgressDialogFragment) {
-                    updateProgress(fragment, bundle, tag);
-                } else {
+                if (!(findFragment instanceof ProgressDialogFragment)) {
                     ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(fragment, bundle);
                     dialog.show(manager, tag);
                 }

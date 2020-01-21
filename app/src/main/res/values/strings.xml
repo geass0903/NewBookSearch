@@ -36,6 +36,10 @@
     <string name="label_sale">発売</string>
     <string name="label_reload">更新</string>
     <string name="label_add">追加</string>
-
-
+    <string name="label_isbn">ISBN</string>
+    <string name="label_link_up_dropbox">Dropbox連携</string>
+    <string name="label_log_in">ログイン</string>
+    <string name="label_log_out">ログアウト</string>
+    <string name="label_backup">バックアップ</string>
+    <string name="label_restore">リストア</string>
 </resources>
