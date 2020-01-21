@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
 import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Books;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
@@ -26,11 +27,11 @@ public class ReloadThread extends BaseThread{
     private static final String TAG = ReloadThread.class.getSimpleName();
     private static final boolean D = true;
 
-    private final AppDatabase database;
+    private final ApplicationData app;
 
     public ReloadThread(Context context){
         super(context);
-        this.database = AppDatabase.getInstance(context.getApplicationContext());
+        this.app = (ApplicationData)context.getApplicationContext();
     }
 
     public void run() {
@@ -46,7 +47,7 @@ public class ReloadThread extends BaseThread{
     }
 
     private Result reloadNewBooks(){
-        List<Keyword> allKeyword = database.keywordDao().loadAllKeyword();
+        List<Keyword> allKeyword = app.getDatabase().keywordDao().loadAllKeyword();
         List<String> keywords = new ArrayList<>();
         for(Keyword keyword : allKeyword){
             if(!keywords.contains(keyword.getWord())){
@@ -76,7 +77,7 @@ public class ReloadThread extends BaseThread{
             books.addAll(newBooks);
         }
         if(books.size() > 0) {
-            database.bookDao().replaceAll(books);
+            app.getDatabase().bookDao().replaceAll(books);
             return Result.ReloadSuccess(books);
         }else{
             return Result.ReloadError(Result.ERROR_CODE_IO_EXCEPTION, "no books");

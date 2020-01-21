@@ -12,7 +12,7 @@ public class Result {
     public static final int ERROR_CODE_EMPTY_KEYWORD            =   7;
     public static final int ERROR_CODE_EMPTY_KEYWORDS =   8;
     public static final int ERROR_CODE_EXPORT_DIR_NOT_FOUND     =   9;
-    public static final int ERROR_CODE_EXPORT_CANCELED          =  10;
+    public static final int ERROR_CODE_BACKUP_CANCELED =  10;
     public static final int ERROR_CODE_IMPORT_DIR_NOT_FOUND     =  11;
     public static final int ERROR_CODE_IMPORT_CANCELED          =  12;
     public static final int ERROR_CODE_UPLOAD_CANCELED          =  13;
@@ -76,11 +76,11 @@ public class Result {
 
 
     /*--- File Backup success ---*/
-    public static Result BackupSuccess(int type) {
+    public static Result DropboxSuccess(int type) {
         return new Result(true, 0, "No Error", type, null, false);
     }
     /*--- File Backup error ---*/
-    public static Result BackupError(int type, int errorCode, String errorMessage) {
+    public static Result DropboxError(int type, int errorCode, String errorMessage) {
         return new Result(false,errorCode, errorMessage ,type, null, false);
     }
 
