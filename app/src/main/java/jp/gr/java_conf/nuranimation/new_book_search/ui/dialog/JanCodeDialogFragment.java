@@ -68,12 +68,17 @@ public class JanCodeDialogFragment extends DialogFragment{
         }
 
         if (savedInstanceState != null) {
+
             mTitle = savedInstanceState.getString(KEY_TITLE);
             mISBN = savedInstanceState.getString(KEY_ISBN);
         } else {
-            Bundle bundle = this.getArguments();
-            mTitle = bundle.getString(KEY_TITLE);
-            mISBN = bundle.getString(KEY_ISBN);
+//            Bundle bundle = this.getArguments();
+//            Bundle bundle = JanCodeDialogFragmentArgs.fromBundle(getArguments()).getIsbn();
+
+//            mTitle = bundle.getString(KEY_TITLE);/
+//            mISBN = bundle.getString(KEY_ISBN);
+            mTitle = JanCodeDialogFragmentArgs.fromBundle(getArguments()).getTitle();
+            mISBN = JanCodeDialogFragmentArgs.fromBundle(getArguments()).getIsbn();
         }
         setCancelable(true);
 

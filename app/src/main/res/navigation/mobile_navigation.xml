@@ -9,13 +9,24 @@
         android:id="@+id/navigation_new_books"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksFragment"
         android:label="@string/title_new_books"
-        tools:layout="@layout/fragment_new_books" />
+        tools:layout="@layout/fragment_new_books" >
+        <action
+            android:id="@+id/action_navigation_new_books_to_navigation_dialog_progress"
+            app:destination="@+id/navigation_dialog_progress" />
+        <action
+            android:id="@+id/action_navigation_new_books_to_navigation_dialog_jan_code"
+            app:destination="@id/navigation_dialog_jan_code" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_keywords"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.keywords.KeywordsFragment"
         android:label="@string/title_keywords"
-        tools:layout="@layout/fragment_keywords" />
+        tools:layout="@layout/fragment_keywords" >
+        <action
+            android:id="@+id/action_navigation_keywords_to_navigation_dialog_edit_keyword"
+            app:destination="@id/navigation_dialog_edit_keyword" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_settings"
@@ -36,7 +47,10 @@
 
     <dialog
         android:id="@+id/navigation_dialog_jan_code"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment"
-        />
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment" >
+        <argument android:name="isbn" app:argType="string" />
+        <argument android:name="title" app:argType="string" />
+
+    </dialog>
 
 </navigation>

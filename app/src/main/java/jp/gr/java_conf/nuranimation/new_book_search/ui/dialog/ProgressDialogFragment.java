@@ -5,15 +5,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
+import jp.gr.java_conf.nuranimation.new_book_search.databinding.DialogProgressBinding;
 
 public class ProgressDialogFragment extends DialogFragment{
     private static final String TAG = ProgressDialogFragment.class.getSimpleName();
@@ -33,6 +40,8 @@ public class ProgressDialogFragment extends DialogFragment{
     private String mMessage;
     private String mProgress;
     private boolean mCancelable;
+
+    private ProgressDialogViewModel progressDialogViewModel;
 
 
     public interface OnProgressDialogListener {
@@ -98,6 +107,12 @@ public class ProgressDialogFragment extends DialogFragment{
             throw new NullPointerException("getArguments() == null");
         }
 
+
+        progressDialogViewModel = ViewModelProviders.of(getActivity()).get(ProgressDialogViewModel.class);
+
+
+
+
         if (savedInstanceState != null) {
             mTitle = savedInstanceState.getString(KEY_TITLE);
             mMessage = savedInstanceState.getString(KEY_MESSAGE);
@@ -111,8 +126,20 @@ public class ProgressDialogFragment extends DialogFragment{
             mCancelable = bundle.getBoolean(KEY_CANCELABLE, true);
         }
         setCancelable(false);
+
+
+        final DialogProgressBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),R.layout.dialog_progress,null,false);
+        binding.setLifecycleOwner(this);
+        binding.setDialog(progressDialogViewModel);
+
+//        return binding.getRoot();
+
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(R.layout.dialog_progress);
+        builder.setView(binding.getRoot());
+//        builder.setView(R.layout.dialog_progress);
+
 
         if(mCancelable){
             builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
@@ -137,20 +164,23 @@ public class ProgressDialogFragment extends DialogFragment{
     public void onStart() {
         super.onStart();
         if(getDialog() != null) {
-            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
-            mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
-            mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
+//            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
+//            mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
+//            mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
         }
         setDialogTitle(mTitle);
         setDialogProgress(mMessage, mProgress);
     }
 
+
+
+
     public void setDialogTitle(String title) {
         if (mTextView_Title == null && getDialog() != null) {
-            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
+//            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
         }
         if (title != null) {
-            mTextView_Title.setText(title);
+//            mTextView_Title.setText(title);
             mTitle = title;
         }
     }
@@ -158,18 +188,18 @@ public class ProgressDialogFragment extends DialogFragment{
     public void setDialogProgress(String message, String progress) {
         if(getDialog() != null) {
             if (mTextView_Message == null) {
-                mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
+//                mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
             }
             if (mTextView_Progress == null) {
-                mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
+//                mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
             }
         }
         if (message != null) {
-            mTextView_Message.setText(message);
+//            mTextView_Message.setText(message);
             mMessage = message;
         }
         if (progress != null) {
-            mTextView_Progress.setText(progress);
+ //           mTextView_Progress.setText(progress);
             mProgress = progress;
         }
     }

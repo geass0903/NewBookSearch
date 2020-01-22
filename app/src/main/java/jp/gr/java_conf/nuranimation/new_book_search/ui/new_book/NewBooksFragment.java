@@ -18,7 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.DialogFragmentNavigator;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dropbox.core.android.Auth;
@@ -33,7 +37,9 @@ import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragmentArgs;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogViewModel;
 
 public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener,ProgressDialogFragment.OnProgressDialogListener{
     private static final String TAG = NewBooksFragment.class.getSimpleName();
@@ -46,16 +52,21 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
     private NewBooksViewModel newBooksViewModel;
 
+    private ProgressDialogViewModel progressDialogViewModel;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         setHasOptionsMenu(true);
     }
 
-
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         newBooksViewModel = ViewModelProviders.of(this).get(NewBooksViewModel.class);
+
+        progressDialogViewModel = ViewModelProviders.of(getActivity()).get(ProgressDialogViewModel.class);
+
         final FragmentNewBooksBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_books, container, false);
         binding.setLifecycleOwner(this);
         binding.setViewModel(newBooksViewModel);
@@ -123,7 +134,23 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
             Bundle bundle = new Bundle();
             bundle.putString(JanCodeDialogFragment.KEY_TITLE, data.getTitle());
             bundle.putString(JanCodeDialogFragment.KEY_ISBN, data.getIsbn());
-            JanCodeDialogFragment.showProgressDialog(this, bundle, TAG_JAN_CODE_DIALOG);
+//            JanCodeDialogFragment.showProgressDialog(this, bundle, TAG_JAN_CODE_DIALOG);
+
+
+            NewBooksFragmentDirections.ActionNavigationNewBooksToNavigationDialogJanCode action = NewBooksFragmentDirections.actionNavigationNewBooksToNavigationDialogJanCode(data.getIsbn(),data.getTitle());
+
+            NavHostFragment.findNavController(this).navigate(action);
+
+
+
+//            NavHostFragment.findNavController(this).navigate(R.id.action_navigation_new_books_to_navigation_dialog_jan_code);
+
+
+//            NavHostFragment.findNavController(this).navigate(R.id.action_navigation_new_books_to_navigation_dialog_jan_code);
+
+//            Navigation.findNavController().navigate(R.id.navigation_dialog_jan_code);
+
+
         }
     }
 
@@ -168,7 +195,10 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                     Bundle bundle = new Bundle();
                     bundle.putString(ProgressDialogFragment.KEY_MESSAGE, message);
                     bundle.putString(ProgressDialogFragment.KEY_PROGRESS, progress);
-                    ProgressDialogFragment.updateProgress(this, bundle, TAG_RELOAD_PROGRESS_DIALOG);
+
+                    progressDialogViewModel.setProgress(progress);
+
+//                    ProgressDialogFragment.updateProgress(this, bundle, TAG_RELOAD_PROGRESS_DIALOG);
                     break;
             }
         }
