@@ -20,6 +20,37 @@ public enum FragmentEvent {
         }
     },
 
+    START_BACKUP_DROPBOX {
+        @Override
+        public void apply(MainActivity activity) {
+            NewBookService service = activity.getService();
+            service.startBackupDropbox();
+        }
+    },
+
+    STOP_BACKUP_DROPBOX {
+        @Override
+        public void apply(MainActivity activity) {
+            NewBookService service = activity.getService();
+            service.stopBackupDropbox();
+        }
+    },
+
+    START_RESTORE_DROPBOX {
+        @Override
+        public void apply(MainActivity activity) {
+            NewBookService service = activity.getService();
+            service.startRestoreDropbox();
+        }
+    },
+
+    STOP_RESTORE_DROPBOX {
+        @Override
+        public void apply(MainActivity activity) {
+            NewBookService service = activity.getService();
+            service.stopRestoreDropbox();
+        }
+    },
 
     @SuppressWarnings("unused")
     DEFAULT {

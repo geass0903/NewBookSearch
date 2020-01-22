@@ -2,6 +2,7 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -21,8 +23,10 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.dropbox.core.android.Auth;
 
+import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentSettingsBinding;
+import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
@@ -38,8 +42,10 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
 
     private static final int REQUEST_CODE_DROPBOX_LOGOUT = 101;
     private static final int REQUEST_CODE_BACKUP_PROGRESS = 102;
+    private static final int REQUEST_CODE_RESTORE_PROGRESS = 103;
     private static final String TAG_DROPBOX_LOGOUT = "SettingsFragment.TAG_DROPBOX_LOGOUT";
     private static final String TAG_BACKUP_PROGRESS = "SettingsFragment.TAG_BACKUP_PROGRESS";
+    private static final String TAG_RESTORE_PROGRESS = "SettingsFragment.TAG_RESTORE_PROGRESS";
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -108,9 +114,11 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
                     break;
                 case R.id.button_backup:
                     if(D) Log.d(TAG,"backup");
+                    getFragmentListener().onFragmentEvent(FragmentEvent.START_BACKUP_DROPBOX);
                     break;
                 case R.id.button_restore:
                     if(D) Log.d(TAG,"restore");
+                    getFragmentListener().onFragmentEvent(FragmentEvent.START_RESTORE_DROPBOX);
                     break;
             }
 
@@ -142,6 +150,54 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
 
     @Override
     public void onProgressDialogCancelled(int requestCode, Bundle params) {
-
+        if(requestCode == REQUEST_CODE_BACKUP_PROGRESS){
+            getFragmentListener().onFragmentEvent(FragmentEvent.STOP_BACKUP_DROPBOX);
+        }
     }
+
+    @Override
+    protected void onReceiveLocalBroadcast(Context context, Intent intent) {
+        String action = intent.getAction();
+        if (action != null) {
+            switch (action) {
+                case NewBookService.FILTER_ACTION_UPDATE_SERVICE_STATE:
+                    int state = intent.getIntExtra(NewBookService.KEY_SERVICE_STATE, NewBookService.STATE_NONE);
+                    switch (state) {
+                        case NewBookService.STATE_NONE:
+                            if (D) Log.d(TAG, "STATE_NONE");
+                            break;
+                        case NewBookService.STATE_BACKGROUND_INCOMPLETE:
+                            if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_INCOMPLETE");
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(ProgressDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_BACKUP_PROGRESS);
+                            bundle.putString(ProgressDialogFragment.KEY_TITLE, getString(R.string.progress_backup));
+                            bundle.putBoolean(ProgressDialogFragment.KEY_CANCELABLE, true);
+                            ProgressDialogFragment.showProgressDialog(this, bundle, TAG_BACKUP_PROGRESS);
+                            break;
+                        case NewBookService.STATE_BACKGROUND_COMPLETE:
+                            if (D) Log.d(TAG, "STATE_BACKUP_COMPLETE");
+                            getFragmentListener().onFragmentEvent(FragmentEvent.STOP_BACKUP_DROPBOX);
+                            ProgressDialogFragment.dismissProgressDialog(this, TAG_BACKUP_PROGRESS);
+                            Toast.makeText(getContext(), getString(R.string.toast_success_backup), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    break;
+                case NewBookService.FILTER_ACTION_UPDATE_PROGRESS:
+                    String progress = intent.getStringExtra(NewBookService.KEY_PROGRESS_VALUE);
+                    if (progress == null) {
+                        progress = "";
+                    }
+                    String message = intent.getStringExtra(NewBookService.KEY_PROGRESS_MESSAGE);
+                    if (message == null) {
+                        message = "";
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putString(ProgressDialogFragment.KEY_MESSAGE, message);
+                    bundle.putString(ProgressDialogFragment.KEY_PROGRESS, progress);
+                    ProgressDialogFragment.updateProgress(this, bundle, TAG_BACKUP_PROGRESS);
+                    break;
+            }
+        }
+    }
+
 }

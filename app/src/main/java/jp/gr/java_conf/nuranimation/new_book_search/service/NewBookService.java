@@ -22,6 +22,7 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
     public static final int STATE_BACKGROUND_COMPLETE       =  2;
 
     private ReloadThread newBooksThread;
+    private DropboxThread dropboxThread;
 
     private Result mResult;
 
@@ -64,6 +65,10 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
                 newBooksThread.cancel();
                 newBooksThread = null;
             }
+            if(dropboxThread != null){
+                dropboxThread.cancel();
+                dropboxThread = null;
+            }
         }
     }
 
@@ -100,6 +105,37 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
         if (newBooksThread != null) {
             newBooksThread.cancel();
             newBooksThread = null;
+        }
+        setServiceState(STATE_NONE);
+        stopSelf();
+    }
+
+
+    public void startBackupDropbox() {
+        setServiceState(STATE_BACKGROUND_INCOMPLETE);
+        dropboxThread = new DropboxThread(this,DropboxThread.TYPE_BACKUP);
+        dropboxThread.start();
+    }
+
+    public void stopBackupDropbox() {
+        if(dropboxThread != null){
+            dropboxThread.cancel();
+            dropboxThread = null;
+        }
+        setServiceState(STATE_NONE);
+        stopSelf();
+    }
+
+    public void startRestoreDropbox() {
+        setServiceState(STATE_BACKGROUND_INCOMPLETE);
+        dropboxThread = new DropboxThread(this,DropboxThread.TYPE_RESTORE);
+        dropboxThread.start();
+    }
+
+    public void stopRestoreDropbox() {
+        if(dropboxThread != null){
+            dropboxThread.cancel();
+            dropboxThread = null;
         }
         setServiceState(STATE_NONE);
         stopSelf();
