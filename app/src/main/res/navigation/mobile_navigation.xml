@@ -22,4 +22,21 @@
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <dialog
+        android:id="@+id/navigation_dialog_progress"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment"
+        tools:layout="@layout/dialog_progress"
+        />
+
+    <dialog
+        android:id="@+id/navigation_dialog_edit_keyword"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.RegisterKeywordDialogFragment"
+        />
+
+    <dialog
+        android:id="@+id/navigation_dialog_jan_code"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment"
+        />
+
 </navigation>

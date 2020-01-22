@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (D) Log.e(TAG, "+++ ON CREATE +++");
+        if (D) Log.d(TAG, "savedInstanceState = " + savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -95,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         if (mService != null && mService.getServiceState() != NewBookService.STATE_NONE) {
             Intent intent = new Intent(this, NewBookService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent);
+ //               startForegroundService(intent);
             } else {
-                startService(intent);
+//                startService(intent);
             }
         }
     }

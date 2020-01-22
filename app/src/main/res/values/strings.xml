@@ -9,6 +9,7 @@
     <string name="title_delete">キーワードを削除しますか?</string>
 
 
+
     <string name="label_positive">OK</string>
     <string name="label_negative">Cancel</string>
     <string name="label_error">エラー</string>
