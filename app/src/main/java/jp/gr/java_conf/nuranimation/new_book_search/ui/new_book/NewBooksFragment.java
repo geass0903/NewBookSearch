@@ -18,34 +18,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.DialogFragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dropbox.core.android.Auth;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
-import jp.gr.java_conf.nuranimation.new_book_search.MainActivity;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooksBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
+import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
-import jp.gr.java_conf.nuranimation.new_book_search.service.TestLoader;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragmentArgs;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogViewModel;
 
-public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener,ProgressDialogFragment.OnProgressDialogListener{
+public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener{
     private static final String TAG = NewBooksFragment.class.getSimpleName();
     private static final boolean D = true;
 
@@ -70,7 +60,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                              ViewGroup container, Bundle savedInstanceState) {
         newBooksViewModel = ViewModelProviders.of(this).get(NewBooksViewModel.class);
 
-        progressDialogViewModel = ViewModelProviders.of(getActivity()).get(ProgressDialogViewModel.class);
+        progressDialogViewModel = ViewModelProviders.of(requireActivity()).get(ProgressDialogViewModel.class);
+
 
         final FragmentNewBooksBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_books, container, false);
         binding.setLifecycleOwner(this);
@@ -94,7 +85,10 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
             boolean result = args.getResult();
             if (D) Log.d(TAG, "onViewCreated" + result);
 
-
+            if(result) {
+                newBooksViewModel.loadAllBooks();
+                Toast.makeText(getContext(), getString(R.string.toast_success_reload), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -116,7 +110,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         if(LoaderManager.getInstance(this).getLoader(LOADER_ID) != null){
         }else{
             if(D) Log.d(TAG,"loader = null");
-            progressDialogViewModel.setVisible(false);
+ //           progressDialogViewModel.setVisible(false);
         }
 
     }
@@ -172,7 +166,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
 //            NewBooksFragmentDirections.ActionNavigationNewBooksToNavigationDialogJanCode action = NewBooksFragmentDirections.actionNavigationNewBooksToNavigationDialogJanCode(data.getIsbn(),data.getTitle());
 
-            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message");
+            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message","progress");
             NavHostFragment.findNavController(this).navigate(action);
 
 //            NavHostFragment.findNavController(this).navigate(action);
@@ -202,17 +196,11 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                             break;
                         case NewBookService.STATE_BACKGROUND_INCOMPLETE:
                             if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_INCOMPLETE");
-                            Bundle bundle = new Bundle();
-                            bundle.putInt(ProgressDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_RELOAD_PROGRESS_DIALOG);
-                            bundle.putString(ProgressDialogFragment.KEY_TITLE, getString(R.string.progress_reload));
-                            bundle.putBoolean(ProgressDialogFragment.KEY_CANCELABLE, true);
-                            ProgressDialogFragment.showProgressDialog(this, bundle, TAG_RELOAD_PROGRESS_DIALOG);
                             break;
                         case NewBookService.STATE_BACKGROUND_COMPLETE:
                             if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_COMPLETE");
                             newBooksViewModel.loadAllBooks();
                             getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
-                            ProgressDialogFragment.dismissProgressDialog(this, TAG_RELOAD_PROGRESS_DIALOG);
                             Toast.makeText(getContext(), getString(R.string.toast_success_reload), Toast.LENGTH_SHORT).show();
                             break;
                     }
@@ -227,8 +215,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                         message = "";
                     }
                     Bundle bundle = new Bundle();
-                    bundle.putString(ProgressDialogFragment.KEY_MESSAGE, message);
-                    bundle.putString(ProgressDialogFragment.KEY_PROGRESS, progress);
+//                    bundle.putString(ProgressDialogFragment.KEY_MESSAGE, message);
+//                    bundle.putString(ProgressDialogFragment.KEY_PROGRESS, progress);
 
                     progressDialogViewModel.setProgress(progress);
 
@@ -238,7 +226,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         }
     }
 
-
+/*
     @Override
     public void onProgressDialogCancelled(int requestCode, Bundle params) {
         if(requestCode == REQUEST_CODE_RELOAD_PROGRESS_DIALOG){
@@ -246,5 +234,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         }
     }
 
+
+ */
 
 }

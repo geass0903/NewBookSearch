@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
-import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Books;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
@@ -34,6 +33,7 @@ public class ReloadThread extends BaseThread{
         this.app = (ApplicationData)context.getApplicationContext();
     }
 
+    @Override
     public void run() {
         Result mResult = reloadNewBooks();
         if (getThreadListener() != null && !isCanceled()) {
@@ -41,6 +41,7 @@ public class ReloadThread extends BaseThread{
         }
     }
 
+    @Override
     public void cancel() {
         super.cancel();
         if (D) Log.d(TAG, "thread cancel");

@@ -1,110 +1,29 @@
 package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import androidx.navigation.fragment.NavHostFragment;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.DialogProgressBinding;
-import jp.gr.java_conf.nuranimation.new_book_search.service.TestLoader;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 
 public class ProgressDialogFragment extends DialogFragment{
     private static final String TAG = ProgressDialogFragment.class.getSimpleName();
     private static final boolean D = true;
 
-    public static final String KEY_REQUEST_CODE = "ProgressDialogFragment.KEY_REQUEST_CODE";
-    public static final String KEY_TITLE = "ProgressDialogFragment.KEY_TITLE";
-    public static final String KEY_MESSAGE = "ProgressDialogFragment.KEY_MESSAGE";
-    public static final String KEY_PROGRESS = "ProgressDialogFragment.KEY_PROGRESS";
-    public static final String KEY_PARAMS = "ProgressDialogFragment.KEY_PARAMS";
-    public static final String KEY_CANCELABLE       = "ProgressDialogFragment.KEY_CANCELABLE";
-
-    private TextView mTextView_Title;
-    private TextView mTextView_Message;
-    private TextView mTextView_Progress;
-    private String mTitle;
-    private String mMessage;
-    private String mProgress;
-    private boolean mCancelable;
-
     private ProgressDialogViewModel progressDialogViewModel;
-
-
-    public interface OnProgressDialogListener {
-        void onProgressDialogCancelled(int requestCode, Bundle params);
-    }
-
-    private OnProgressDialogListener mListener;
-
-
-    public static ProgressDialogFragment newInstance(Fragment fragment, Bundle bundle) {
-        ProgressDialogFragment instance = new ProgressDialogFragment();
-        instance.setArguments(bundle);
-        int request_code = bundle.getInt(KEY_REQUEST_CODE);
-        instance.setTargetFragment(fragment, request_code);
-        return instance;
-    }
-
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Fragment targetFragment = this.getTargetFragment();
-        if (targetFragment instanceof OnProgressDialogListener) {
-            mListener = (OnProgressDialogListener) targetFragment;
-        } else {
-            Fragment parentFragment = this.getParentFragment();
-            if (parentFragment instanceof OnProgressDialogListener) {
-                mListener = (OnProgressDialogListener) parentFragment;
-            } else {
-                if (context instanceof OnProgressDialogListener) {
-                    mListener = (OnProgressDialogListener) context;
-                }
-            }
-        }
-        if(D) Log.d(TAG,"context: " + context);
-        if(D) Log.d(TAG,"mListener: " + mListener);
-        if (mListener == null) {
-
- //           throw new UnsupportedOperationException("Listener is not Implementation.");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(KEY_TITLE, mTitle);
-        outState.putString(KEY_MESSAGE, mMessage);
-        outState.putString(KEY_PROGRESS, mProgress);
-        outState.putBoolean(KEY_CANCELABLE, mCancelable);
-    }
-
 
     @NonNull
     @Override
@@ -115,265 +34,66 @@ public class ProgressDialogFragment extends DialogFragment{
         if (getArguments() == null) {
             throw new NullPointerException("getArguments() == null");
         }
-
-
-        progressDialogViewModel = ViewModelProviders.of(requireActivity()).get(ProgressDialogViewModel.class);
-
-
-
-        if (savedInstanceState != null) {
-            mTitle = savedInstanceState.getString(KEY_TITLE);
-            mMessage = savedInstanceState.getString(KEY_MESSAGE);
-            mProgress = savedInstanceState.getString(KEY_PROGRESS);
-            mCancelable = savedInstanceState.getBoolean(KEY_CANCELABLE, true);
-        } else {
-            Bundle bundle = this.getArguments();
-            mTitle = bundle.getString(KEY_TITLE);
-            mMessage = bundle.getString(KEY_MESSAGE);
-            mProgress = bundle.getString(KEY_PROGRESS);
-            mCancelable = bundle.getBoolean(KEY_CANCELABLE, true);
-        }
         setCancelable(false);
+        progressDialogViewModel = ViewModelProviders.of(this).get(ProgressDialogViewModel.class);
 
-
-        final DialogProgressBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),R.layout.dialog_progress,null,false);
+        ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
+        final DialogProgressBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.dialog_progress, null, false);
+        binding.progressDialogTitle.setText(args.getTitle());
+        binding.progressDialogMessage.setText(args.getMessage());
+        binding.progressDialogProgress.setText(args.getProgress());
         binding.setLifecycleOwner(this);
-
-//        progressDialogViewModel.setVisible(true);
-
-        progressDialogViewModel.isVisible().observe(this, new Observer<Boolean>() {
+        binding.setViewModel(progressDialogViewModel);
+        progressDialogViewModel.getResult().observe(this, new Observer<Result>() {
             @Override
-            public void onChanged(Boolean visible) {
-                if(D) Log.d(TAG,"dismiss: " + visible);
-                if(!visible){
-//                    dismiss();
-//                    dismiss();
+            public void onChanged(Result result) {
+                if (result != null && progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_COMPLETE) {
+                    onFinish(result);
                 }
             }
         });
 
-
-        binding.setViewModel(progressDialogViewModel);
-
-//        return binding.getRoot();
-
-
-
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
-//        builder.setView(R.layout.dialog_progress);
 
-
-        if(mCancelable){
-            builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (D) Log.d(TAG, "onClick(DialogInterface dialog, int which)" + getArguments() + " "  + mListener );
-                    if (getArguments() != null && mListener != null) {
-
-                        Fragment fragment = getFragmentManager().getFragments().get(0);
-
-                        if(fragment instanceof OnProgressDialogListener){
-                            OnProgressDialogListener listener = (OnProgressDialogListener)fragment;
-                            listener.onProgressDialogCancelled(getRequestCode(), getArguments().getBundle(KEY_PARAMS));
-                        }
-
-
-
-//                        OnProgressDialogListener mListener = (OnProgressDialogListener)getFragmentManager().getFragments().get(0)
-
-//                        mListener.onProgressDialogCancelled(getRequestCode(), getArguments().getBundle(KEY_PARAMS));
-                    }
-                    dismiss();
-                }
-            });
-
-
-        }
+        builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onFinish(null);
+            }
+        });
 
         return builder.create();
     }
 
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if(getDialog() != null) {
-//            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
-//            mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
-//            mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
-        }
-        setDialogTitle(mTitle);
-        setDialogProgress(mMessage, mProgress);
-    }
-
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (D) Log.d(TAG, "onViewCreated");
-    }
-
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG,"savedInstanceState: " + savedInstanceState);
-
-        int LOADER_ID = 1;
-
-        if(savedInstanceState == null){
-            Log.d(TAG,"init loader");
-            Bundle bundle = new Bundle();
-            bundle.putString("KEY","TEST");
-            LoaderManager.getInstance(this).initLoader(LOADER_ID,bundle,mCallback);
+        if(savedInstanceState != null){
+            if(progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_NONE){
+                onFinish(null);
+            }
         }else{
-            if(LoaderManager.getInstance(this).getLoader(LOADER_ID) != null){
-                Log.d(TAG,"resume loader");
-                Bundle bundle = new Bundle();
-                bundle.putString("KEY","TEST");
-            LoaderManager.getInstance(this).initLoader(LOADER_ID,bundle,mCallback);
-            }else{
-                Log.d(TAG,"cancel loader");
-                if(D) Log.d(TAG,"loader = null");
-                dismiss();
-            }
+            progressDialogViewModel.setResult(null);
+            progressDialogViewModel.reload();
         }
-
-
-
 
     }
 
 
 
-    public void setDialogTitle(String title) {
-        if (mTextView_Title == null && getDialog() != null) {
-//            mTextView_Title = getDialog().findViewById(R.id.fragment_progress_dialog_title);
+    private void onFinish(Result result){
+        progressDialogViewModel.setState(ProgressDialogViewModel.STATE_NONE);
+        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks();
+
+        if(result != null){
+            if(D) Log.d(TAG,"result : " + result);
+            action.setSrcId(1);
+            action.setResult(true);
         }
-        if (title != null) {
-//            mTextView_Title.setText(title);
-            mTitle = title;
-        }
-    }
-
-    public void setDialogProgress(String message, String progress) {
-        if(getDialog() != null) {
-            if (mTextView_Message == null) {
-//                mTextView_Message = getDialog().findViewById(R.id.fragment_progress_dialog_message);
-            }
-            if (mTextView_Progress == null) {
-//                mTextView_Progress = getDialog().findViewById(R.id.fragment_progress_dialog_progress);
-            }
-        }
-        if (message != null) {
-//            mTextView_Message.setText(message);
-            mMessage = message;
-        }
-        if (progress != null) {
- //           mTextView_Progress.setText(progress);
-            mProgress = progress;
-        }
-    }
-
-
-    private int getRequestCode() {
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            if (bundle.containsKey(KEY_REQUEST_CODE)) {
-                return bundle.getInt(KEY_REQUEST_CODE);
-            } else {
-                return getTargetRequestCode();
-            }
-        }
-        return -1;
-    }
-
-
-    public static void showProgressDialog(Fragment fragment, Bundle bundle, String tag) {
-        if (D) Log.d(TAG, "showProgressDialog TAG: " + tag);
-        if (fragment != null && bundle != null) {
-            FragmentManager manager = fragment.getFragmentManager();
-            if(manager != null) {
-                Fragment findFragment = manager.findFragmentByTag(tag);
-                if (!(findFragment instanceof ProgressDialogFragment)) {
-                    ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(fragment, bundle);
-                    dialog.show(manager, tag);
-                }
-            }
-        }
-    }
-
-    public static void dismissProgressDialog(Fragment fragment, String tag) {
-        if (fragment != null) {
-            FragmentManager manager = fragment.getFragmentManager();
-            if(manager != null) {
-                Fragment findFragment = manager.findFragmentByTag(tag);
-                if (findFragment instanceof ProgressDialogFragment) {
-                    ((ProgressDialogFragment) findFragment).dismiss();
-                }
-            }
-        }
-    }
-
-    public static void updateProgress(Fragment fragment, Bundle bundle, String tag) {
-        if (fragment != null && bundle != null) {
-            FragmentManager manager = fragment.getFragmentManager();
-            if(manager != null) {
-                Fragment findFragment = manager.findFragmentByTag(tag);
-                if (findFragment instanceof ProgressDialogFragment) {
-                    String message = bundle.getString(KEY_MESSAGE);
-                    String progress = bundle.getString(KEY_PROGRESS);
-                    ((ProgressDialogFragment) findFragment).setDialogProgress(message, progress);
-                }
-            }
-        }
-    }
-
-    public void onFinished(int id){
-//        NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message");
-//        NavHostFragment.findNavController(this).navigate(action);
-
-//        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks(1,true);
-
-        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks()
-                .setResult(true)
-                .setSrcId(1);
-
         NavHostFragment.findNavController(this).navigate(action);
-
-        LoaderManager.getInstance(this).destroyLoader(id);
-  //      dismiss();
     }
-
-    private final LoaderManager.LoaderCallbacks<String> mCallback = new LoaderManager.LoaderCallbacks<String>() {
-        @NonNull
-        @Override
-        public Loader<String> onCreateLoader(int id, @Nullable Bundle args) {
-            String extraParam = args.getString("KEY");
-            return new TestLoader(getContext(), extraParam);
-        }
-
-        @Override
-        public void onLoadFinished(@NonNull Loader<String> loader, String data) {
-//            loader.cancelLoad();
-//            LoaderManager.getInstance(getParentFragment()).destroyLoader(1);
-
-
-            onFinished(1);
-
-            Log.d(TAG,"onLoadFinished : mTaskResult : " + data);
-
-  //          dismiss();
-
-        }
-
-        @Override
-        public void onLoaderReset(@NonNull Loader<String> loader) {
-
-        }
-    };
 
 }
 

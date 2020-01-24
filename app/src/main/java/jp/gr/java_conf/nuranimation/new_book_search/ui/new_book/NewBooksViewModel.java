@@ -2,6 +2,7 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.new_book;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -24,6 +25,9 @@ public class NewBooksViewModel extends AndroidViewModel {
         super(application);
         Context context = application.getApplicationContext();
         mApp = (ApplicationData)context;
+        if(mBooks != null) {
+            Log.d("NewBooksViewModel", "mBooks" + mBooks.getValue());
+        }
         mBooks = new MutableLiveData<>();
         loadAllBooks();
     }
@@ -39,9 +43,12 @@ public class NewBooksViewModel extends AndroidViewModel {
                 mBooks.postValue(mApp.getDatabase().bookDao().loadAllBooks());
             }
         }).start();
-
-
-
     }
+
+    @Override
+    protected void onCleared() {
+        Log.d("NewBooksViewModel", "onCleared()");
+    }
+
 
 }

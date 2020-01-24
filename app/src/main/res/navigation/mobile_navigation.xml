@@ -40,13 +40,14 @@
         android:id="@+id/progress"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment"
         tools:layout="@layout/dialog_progress" >
+        <argument android:name="title" app:argType="string" />
+        <argument android:name="message" app:argType="string"/>
+        <argument android:name="progress" app:argType="string" />
         <action
             android:id="@+id/progress_to_new_books"
             app:popUpTo="@id/new_books"
             app:popUpToInclusive="true"
             app:destination="@+id/new_books" />
-        <argument android:name="title" app:argType="string" />
-        <argument android:name="message" app:argType="string"/>
     </dialog>
 
     <dialog
