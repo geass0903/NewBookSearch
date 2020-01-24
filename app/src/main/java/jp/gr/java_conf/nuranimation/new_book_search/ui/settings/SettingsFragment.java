@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -23,7 +22,6 @@ import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentSettings
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
 
 public class SettingsFragment extends BaseFragment implements NormalDialogFragment.OnNormalDialogListener{
     private static final String TAG = SettingsFragment.class.getSimpleName();

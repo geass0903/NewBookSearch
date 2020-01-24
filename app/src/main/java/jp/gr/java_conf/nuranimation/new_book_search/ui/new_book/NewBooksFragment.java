@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.loader.app.LoaderManager;
 import androidx.navigation.fragment.NavHostFragment;
@@ -28,12 +27,10 @@ import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooksBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
-import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogViewModel;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel;
 
 public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener{
     private static final String TAG = NewBooksFragment.class.getSimpleName();

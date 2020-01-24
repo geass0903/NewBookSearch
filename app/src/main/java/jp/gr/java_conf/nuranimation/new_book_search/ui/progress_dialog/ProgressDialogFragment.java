@@ -1,4 +1,4 @@
-package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog;
+package jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

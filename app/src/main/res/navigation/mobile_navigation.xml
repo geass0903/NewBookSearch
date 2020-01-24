@@ -38,7 +38,7 @@
 
     <dialog
         android:id="@+id/progress"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogFragment"
         tools:layout="@layout/dialog_progress" >
         <argument android:name="title" app:argType="string" />
         <argument android:name="message" app:argType="string"/>

@@ -1,4 +1,4 @@
-package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog;
+package jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog;
 
 import android.app.Application;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogViewModel" />
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel" />
     </data>
 
     <LinearLayout
