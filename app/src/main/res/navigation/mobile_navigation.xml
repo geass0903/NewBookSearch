@@ -3,54 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/navigation_new_books">
+    app:startDestination="@id/new_books">
 
     <fragment
-        android:id="@+id/navigation_new_books"
+        android:id="@+id/new_books"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksFragment"
         android:label="@string/title_new_books"
         tools:layout="@layout/fragment_new_books" >
         <action
-            android:id="@+id/action_navigation_new_books_to_navigation_dialog_progress"
-            app:destination="@+id/navigation_dialog_progress" />
+            android:id="@+id/new_books_to_progress"
+            app:destination="@+id/progress" />
         <action
-            android:id="@+id/action_navigation_new_books_to_navigation_dialog_jan_code"
-            app:destination="@id/navigation_dialog_jan_code" />
+            android:id="@+id/new_books_to_jan_code"
+            app:destination="@id/jan_code" />
+        <argument android:name="src_id" app:argType="integer"  android:defaultValue="0" />
+        <argument android:name="result" app:argType="boolean" android:defaultValue="false"/>
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_keywords"
+        android:id="@+id/keywords"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.keywords.KeywordsFragment"
         android:label="@string/title_keywords"
         tools:layout="@layout/fragment_keywords" >
         <action
-            android:id="@+id/action_navigation_keywords_to_navigation_dialog_edit_keyword"
-            app:destination="@id/navigation_dialog_edit_keyword" />
+            android:id="@+id/keywords_to_edit"
+            app:destination="@id/edit_keyword" />
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_settings"
+        android:id="@+id/settings"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
 
     <dialog
-        android:id="@+id/navigation_dialog_progress"
+        android:id="@+id/progress"
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.ProgressDialogFragment"
-        tools:layout="@layout/dialog_progress"
-        />
+        tools:layout="@layout/dialog_progress" >
+        <action
+            android:id="@+id/progress_to_new_books"
+            app:popUpTo="@id/new_books"
+            app:popUpToInclusive="true"
+            app:destination="@+id/new_books" />
+        <argument android:name="title" app:argType="string" />
+        <argument android:name="message" app:argType="string"/>
+    </dialog>
 
     <dialog
-        android:id="@+id/navigation_dialog_edit_keyword"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.RegisterKeywordDialogFragment"
-        />
+        android:id="@+id/edit_keyword"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.EditKeywordDialogFragment"
+        tools:layout="@layout/dialog_edit_keyword" >
+    </dialog>
 
     <dialog
-        android:id="@+id/navigation_dialog_jan_code"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment" >
+        android:id="@+id/jan_code"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment"
+        tools:layout="@layout/dialog_jan_code" >
         <argument android:name="isbn" app:argType="string" />
         <argument android:name="title" app:argType="string" />
-
     </dialog>
 
 </navigation>

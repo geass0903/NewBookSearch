@@ -20,6 +20,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.DialogFragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
@@ -31,10 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
+import jp.gr.java_conf.nuranimation.new_book_search.MainActivity;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooksBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
+import jp.gr.java_conf.nuranimation.new_book_search.service.TestLoader;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragmentArgs;
@@ -49,7 +53,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     private static final String TAG_RELOAD_PROGRESS_DIALOG = "NewBooksFragment.TAG_RELOAD_PROGRESS_DIALOG";
     private static final String TAG_JAN_CODE_DIALOG = "NewBooksFragment.TAG_JAN_CODE_DIALOG";
     private static final int REQUEST_CODE_RELOAD_PROGRESS_DIALOG = 103;
-
+    private static final int LOADER_ID = 1;
+    private String mTaskResult;
     private NewBooksViewModel newBooksViewModel;
 
     private ProgressDialogViewModel progressDialogViewModel;
@@ -80,12 +85,40 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (D) Log.d(TAG, "onViewCreated");
+
+        if(getArguments() != null){
+            NewBooksFragmentArgs args = NewBooksFragmentArgs.fromBundle(getArguments());
+
+            int id = args.getSrcId();
+            if (D) Log.d(TAG, "onViewCreated" + id);
+            boolean result = args.getResult();
+            if (D) Log.d(TAG, "onViewCreated" + result);
+
+
+        }
     }
 
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG,"savedInstanceState: " + savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mTaskResult = savedInstanceState.getString("KEY");
+        }
+
+        if (mTaskResult != null) {
+            Log.d(TAG,"mTaskResult: " + mTaskResult);
+        }
+        Log.d(TAG,"mTaskResult: " + mTaskResult);
+//        if(mTaskResult == null){
+        if(LoaderManager.getInstance(this).getLoader(LOADER_ID) != null){
+        }else{
+            if(D) Log.d(TAG,"loader = null");
+            progressDialogViewModel.setVisible(false);
+        }
+
     }
 
     @Override
@@ -137,11 +170,12 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 //            JanCodeDialogFragment.showProgressDialog(this, bundle, TAG_JAN_CODE_DIALOG);
 
 
-            NewBooksFragmentDirections.ActionNavigationNewBooksToNavigationDialogJanCode action = NewBooksFragmentDirections.actionNavigationNewBooksToNavigationDialogJanCode(data.getIsbn(),data.getTitle());
+//            NewBooksFragmentDirections.ActionNavigationNewBooksToNavigationDialogJanCode action = NewBooksFragmentDirections.actionNavigationNewBooksToNavigationDialogJanCode(data.getIsbn(),data.getTitle());
 
+            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message");
             NavHostFragment.findNavController(this).navigate(action);
 
-
+//            NavHostFragment.findNavController(this).navigate(action);
 
 //            NavHostFragment.findNavController(this).navigate(R.id.action_navigation_new_books_to_navigation_dialog_jan_code);
 
@@ -211,4 +245,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
             getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
         }
     }
+
+
 }

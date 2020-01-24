@@ -85,6 +85,9 @@ public class JanCodeDialogFragment extends DialogFragment{
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(R.layout.dialog_jan_code);
 
+
+
+
         return builder.create();
     }
 

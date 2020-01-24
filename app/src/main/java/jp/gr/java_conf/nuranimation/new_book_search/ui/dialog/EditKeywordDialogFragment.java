@@ -24,8 +24,8 @@ import java.util.List;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.model.utils.NewBookUtils;
 
-public class RegisterKeywordDialogFragment extends DialogFragment {
-    private static final String TAG = RegisterKeywordDialogFragment.class.getSimpleName();
+public class EditKeywordDialogFragment extends DialogFragment {
+    private static final String TAG = EditKeywordDialogFragment.class.getSimpleName();
     private static final boolean D = true;
 
     public static final String KEY_REQUEST_CODE     = "RegisterKeywordDialogFragment.KEY_REQUEST_CODE";
@@ -54,8 +54,8 @@ public class RegisterKeywordDialogFragment extends DialogFragment {
     private OnRegisterKeywordDialogListener mListener;
 
 
-    public static RegisterKeywordDialogFragment newInstance(Fragment fragment, Bundle bundle){
-        RegisterKeywordDialogFragment instance = new RegisterKeywordDialogFragment();
+    public static EditKeywordDialogFragment newInstance(Fragment fragment, Bundle bundle){
+        EditKeywordDialogFragment instance = new EditKeywordDialogFragment();
         instance.setArguments(bundle);
         int request_code = bundle.getInt(KEY_REQUEST_CODE);
         instance.setTargetFragment(fragment,request_code);
@@ -198,8 +198,8 @@ public class RegisterKeywordDialogFragment extends DialogFragment {
             FragmentManager manager = fragment.getFragmentManager();
             if(manager != null) {
                 Fragment findFragment = manager.findFragmentByTag(tag);
-                if (!(findFragment instanceof RegisterKeywordDialogFragment)) {
-                    RegisterKeywordDialogFragment dialog = RegisterKeywordDialogFragment.newInstance(fragment, bundle);
+                if (!(findFragment instanceof EditKeywordDialogFragment)) {
+                    EditKeywordDialogFragment dialog = EditKeywordDialogFragment.newInstance(fragment, bundle);
                     dialog.show(manager, tag);
                 }
             }

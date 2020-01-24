@@ -26,10 +26,10 @@ import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentKeywords
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.RegisterKeywordDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.EditKeywordDialogFragment;
 
 
-public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerViewAdapter.OnItemClickListener, NormalDialogFragment.OnNormalDialogListener,RegisterKeywordDialogFragment.OnRegisterKeywordDialogListener {
+public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerViewAdapter.OnItemClickListener, NormalDialogFragment.OnNormalDialogListener, EditKeywordDialogFragment.OnRegisterKeywordDialogListener {
     private static final String TAG = KeywordsFragment.class.getSimpleName();
     private static final boolean D = true;
     private KeywordsViewModel keywordsViewModel;
@@ -116,12 +116,12 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
                         }
                     }
                 }
-                bundle.putString(RegisterKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
-                bundle.putStringArrayList(RegisterKeywordDialogFragment.KEY_WORD_LIST, keywordList);
-                bundle.putString(RegisterKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-                bundle.putString(RegisterKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-                bundle.putInt(RegisterKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
-                RegisterKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
+                bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
+                bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
+                bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
+                bundle.putString(EditKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
+                bundle.putInt(EditKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
+                EditKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -148,14 +148,14 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
                 }
             }
             Bundle bundle = new Bundle();
-            bundle.putString(RegisterKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
-            bundle.putString(RegisterKeywordDialogFragment.KEY_WORD, keyword.getWord());
-            bundle.putStringArrayList(RegisterKeywordDialogFragment.KEY_WORD_LIST, keywordList);
-            bundle.putString(RegisterKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-            bundle.putString(RegisterKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-            bundle.putBundle(RegisterKeywordDialogFragment.KEY_PARAMS, params);
-            bundle.putInt(RegisterKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
-            RegisterKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
+            bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
+            bundle.putString(EditKeywordDialogFragment.KEY_WORD, keyword.getWord());
+            bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
+            bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
+            bundle.putString(EditKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
+            bundle.putBundle(EditKeywordDialogFragment.KEY_PARAMS, params);
+            bundle.putInt(EditKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
+            EditKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
 
 
         }

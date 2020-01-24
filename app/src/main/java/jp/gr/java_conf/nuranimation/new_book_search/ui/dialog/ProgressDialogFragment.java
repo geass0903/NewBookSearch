@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
@@ -18,9 +19,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.navigation.fragment.NavHostFragment;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.DialogProgressBinding;
+import jp.gr.java_conf.nuranimation.new_book_search.service.TestLoader;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 
 public class ProgressDialogFragment extends DialogFragment{
     private static final String TAG = ProgressDialogFragment.class.getSimpleName();
@@ -76,8 +82,11 @@ public class ProgressDialogFragment extends DialogFragment{
                 }
             }
         }
+        if(D) Log.d(TAG,"context: " + context);
+        if(D) Log.d(TAG,"mListener: " + mListener);
         if (mListener == null) {
-            throw new UnsupportedOperationException("Listener is not Implementation.");
+
+ //           throw new UnsupportedOperationException("Listener is not Implementation.");
         }
     }
 
@@ -108,8 +117,7 @@ public class ProgressDialogFragment extends DialogFragment{
         }
 
 
-        progressDialogViewModel = ViewModelProviders.of(getActivity()).get(ProgressDialogViewModel.class);
-
+        progressDialogViewModel = ViewModelProviders.of(requireActivity()).get(ProgressDialogViewModel.class);
 
 
 
@@ -130,7 +138,22 @@ public class ProgressDialogFragment extends DialogFragment{
 
         final DialogProgressBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),R.layout.dialog_progress,null,false);
         binding.setLifecycleOwner(this);
-        binding.setDialog(progressDialogViewModel);
+
+//        progressDialogViewModel.setVisible(true);
+
+        progressDialogViewModel.isVisible().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean visible) {
+                if(D) Log.d(TAG,"dismiss: " + visible);
+                if(!visible){
+//                    dismiss();
+//                    dismiss();
+                }
+            }
+        });
+
+
+        binding.setViewModel(progressDialogViewModel);
 
 //        return binding.getRoot();
 
@@ -147,7 +170,19 @@ public class ProgressDialogFragment extends DialogFragment{
                 public void onClick(DialogInterface dialog, int which) {
                     if (D) Log.d(TAG, "onClick(DialogInterface dialog, int which)" + getArguments() + " "  + mListener );
                     if (getArguments() != null && mListener != null) {
-                        mListener.onProgressDialogCancelled(getRequestCode(), getArguments().getBundle(KEY_PARAMS));
+
+                        Fragment fragment = getFragmentManager().getFragments().get(0);
+
+                        if(fragment instanceof OnProgressDialogListener){
+                            OnProgressDialogListener listener = (OnProgressDialogListener)fragment;
+                            listener.onProgressDialogCancelled(getRequestCode(), getArguments().getBundle(KEY_PARAMS));
+                        }
+
+
+
+//                        OnProgressDialogListener mListener = (OnProgressDialogListener)getFragmentManager().getFragments().get(0)
+
+//                        mListener.onProgressDialogCancelled(getRequestCode(), getArguments().getBundle(KEY_PARAMS));
                     }
                     dismiss();
                 }
@@ -172,6 +207,44 @@ public class ProgressDialogFragment extends DialogFragment{
         setDialogProgress(mMessage, mProgress);
     }
 
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (D) Log.d(TAG, "onViewCreated");
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG,"savedInstanceState: " + savedInstanceState);
+
+        int LOADER_ID = 1;
+
+        if(savedInstanceState == null){
+            Log.d(TAG,"init loader");
+            Bundle bundle = new Bundle();
+            bundle.putString("KEY","TEST");
+            LoaderManager.getInstance(this).initLoader(LOADER_ID,bundle,mCallback);
+        }else{
+            if(LoaderManager.getInstance(this).getLoader(LOADER_ID) != null){
+                Log.d(TAG,"resume loader");
+                Bundle bundle = new Bundle();
+                bundle.putString("KEY","TEST");
+            LoaderManager.getInstance(this).initLoader(LOADER_ID,bundle,mCallback);
+            }else{
+                Log.d(TAG,"cancel loader");
+                if(D) Log.d(TAG,"loader = null");
+                dismiss();
+            }
+        }
+
+
+
+
+    }
 
 
 
@@ -257,6 +330,50 @@ public class ProgressDialogFragment extends DialogFragment{
             }
         }
     }
+
+    public void onFinished(int id){
+//        NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message");
+//        NavHostFragment.findNavController(this).navigate(action);
+
+//        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks(1,true);
+
+        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks()
+                .setResult(true)
+                .setSrcId(1);
+
+        NavHostFragment.findNavController(this).navigate(action);
+
+        LoaderManager.getInstance(this).destroyLoader(id);
+  //      dismiss();
+    }
+
+    private final LoaderManager.LoaderCallbacks<String> mCallback = new LoaderManager.LoaderCallbacks<String>() {
+        @NonNull
+        @Override
+        public Loader<String> onCreateLoader(int id, @Nullable Bundle args) {
+            String extraParam = args.getString("KEY");
+            return new TestLoader(getContext(), extraParam);
+        }
+
+        @Override
+        public void onLoadFinished(@NonNull Loader<String> loader, String data) {
+//            loader.cancelLoad();
+//            LoaderManager.getInstance(getParentFragment()).destroyLoader(1);
+
+
+            onFinished(1);
+
+            Log.d(TAG,"onLoadFinished : mTaskResult : " + data);
+
+  //          dismiss();
+
+        }
+
+        @Override
+        public void onLoaderReset(@NonNull Loader<String> loader) {
+
+        }
+    };
 
 }
 

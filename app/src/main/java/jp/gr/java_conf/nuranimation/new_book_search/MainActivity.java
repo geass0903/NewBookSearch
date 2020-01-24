@@ -50,13 +50,10 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (D) Log.e(TAG, "+++ ON CREATE +++");
-        if (D) Log.d(TAG, "savedInstanceState = " + savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_new_books, R.id.navigation_keywords, R.id.navigation_settings)
+                R.id.new_books, R.id.keywords, R.id.settings)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
