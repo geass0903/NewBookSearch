@@ -63,6 +63,7 @@ public class BaseFragment extends Fragment {
         mLocalBroadcastManager.unregisterReceiver(mReceiver);
     }
 
+    @SuppressWarnings("unused")
     protected PausedHandler getPausedHandler(){
         return handler;
     }

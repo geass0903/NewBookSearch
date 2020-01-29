@@ -13,7 +13,7 @@ import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 
-public class NewBookService extends BaseService implements ReloadThread.ThreadListener{
+public class NewBookService extends BaseService{
     private static final String TAG = NewBookService.class.getSimpleName();
     private static final boolean D = true;
 
@@ -21,7 +21,6 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
     public static final int STATE_BACKGROUND_INCOMPLETE     =  1;
     public static final int STATE_BACKGROUND_COMPLETE       =  2;
 
-    private ReloadThread newBooksThread;
     private DropboxThread dropboxThread;
 
     private Result mResult;
@@ -61,10 +60,7 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
     public void onDestroy() {
         if (D) Log.d(TAG, "onDestroy");
         if(getServiceState() == STATE_BACKGROUND_INCOMPLETE){
-            if(newBooksThread != null){
-                newBooksThread.cancel();
-                newBooksThread = null;
-            }
+
             if(dropboxThread != null){
                 dropboxThread.cancel();
                 dropboxThread = null;
@@ -72,43 +68,8 @@ public class NewBookService extends BaseService implements ReloadThread.ThreadLi
         }
     }
 
-    @Override
-    public void deliverResult(Result result) {
-        mResult = result;
-        if(getServiceState() == STATE_BACKGROUND_INCOMPLETE){
-            setServiceState(STATE_BACKGROUND_COMPLETE);
-        }
-    }
 
-    @Override
-    public void deliverProgress(String message, String value) {
-        updateProgress(message, value);
-    }
 
-    public Result getResult() {
-        if (mResult == null) {
-            return Result.Error("get result failed");
-        }else{
-            Result result = Result.DeepCopy(mResult);
-            mResult = null;
-            return result;
-        }
-    }
-
-    public void startReloadNewBooks() {
-        setServiceState(STATE_BACKGROUND_INCOMPLETE);
-        newBooksThread = new ReloadThread(this);
-        newBooksThread.start();
-    }
-
-    public void stopReloadNewBooks() {
-        if (newBooksThread != null) {
-            newBooksThread.cancel();
-            newBooksThread = null;
-        }
-        setServiceState(STATE_NONE);
-        stopSelf();
-    }
 
 
     public void startBackupDropbox() {

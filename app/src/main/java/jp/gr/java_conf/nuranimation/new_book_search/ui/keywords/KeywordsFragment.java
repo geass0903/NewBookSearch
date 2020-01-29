@@ -116,7 +116,7 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
                         }
                     }
                 }
-                bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
+                bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.dialog_title_edit));
                 bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
                 bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
                 bundle.putString(EditKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
@@ -148,7 +148,7 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
                 }
             }
             Bundle bundle = new Bundle();
-            bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.title_edit));
+            bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.dialog_title_edit));
             bundle.putString(EditKeywordDialogFragment.KEY_WORD, keyword.getWord());
             bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
             bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
@@ -172,7 +172,7 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
             if (D) Log.d(TAG, "id: " + keyword.getId());
             if (D) Log.d(TAG, "word: " + keyword.getWord());
             Bundle bundle = new Bundle();
-            bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.title_delete));
+            bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.dialog_title_delete));
             bundle.putString(NormalDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
             bundle.putString(NormalDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
             bundle.putInt(NormalDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_DELETE_KEYWORD);

@@ -4,22 +4,6 @@ import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 
 public enum FragmentEvent {
 
-    START_RELOAD_NEW_BOOKS {
-        @Override
-        public void apply(MainActivity activity) {
-            NewBookService service = activity.getService();
-            service.startReloadNewBooks();
-        }
-    },
-
-    STOP_RELOAD_NEW_BOOKS {
-        @Override
-        public void apply(MainActivity activity) {
-            NewBookService service = activity.getService();
-            service.stopReloadNewBooks();
-        }
-    },
-
     START_BACKUP_DROPBOX {
         @Override
         public void apply(MainActivity activity) {

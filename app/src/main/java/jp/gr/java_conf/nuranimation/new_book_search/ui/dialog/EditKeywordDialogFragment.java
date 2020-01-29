@@ -271,14 +271,14 @@ public class EditKeywordDialogFragment extends DialogFragment {
                     }
                 }
                 if(D) Log.d(TAG,"already exists : " + keyword);
-                errorMessageView.setText(R.string.error_exists);
+                errorMessageView.setText(R.string.message_error_exists);
                 positiveButton.setEnabled(false);
             }else{
                 errorMessageView.setText("");
                 positiveButton.setEnabled(true);
             }
         }else{
-            errorMessageView.setText(R.string.error_keyword);
+            errorMessageView.setText(R.string.message_error_keyword);
             positiveButton.setEnabled(false);
         }
     }

@@ -119,7 +119,7 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
 
     private void popupLogoutDialog(){
         Bundle bundle = new Bundle();
-        bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.title_log_out));
+        bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.dialog_title_log_out));
         bundle.putString(NormalDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
         bundle.putString(NormalDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
         bundle.putInt(NormalDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_DROPBOX_LOGOUT);

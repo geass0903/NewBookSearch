@@ -84,7 +84,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
             if(result) {
                 newBooksViewModel.loadAllBooks();
-                Toast.makeText(getContext(), getString(R.string.toast_success_reload), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -144,7 +144,9 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_action_reload) {
-            getFragmentListener().onFragmentEvent(FragmentEvent.START_RELOAD_NEW_BOOKS);
+//            getFragmentListener().onFragmentEvent(FragmentEvent.START_RELOAD_NEW_BOOKS);
+            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message","progress");
+            NavHostFragment.findNavController(this).navigate(action);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -197,8 +199,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
                         case NewBookService.STATE_BACKGROUND_COMPLETE:
                             if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_COMPLETE");
                             newBooksViewModel.loadAllBooks();
-                            getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
-                            Toast.makeText(getContext(), getString(R.string.toast_success_reload), Toast.LENGTH_SHORT).show();
+                      //      getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
+                            Toast.makeText(getContext(), getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
                             break;
                     }
                     break;

@@ -6,6 +6,7 @@ import android.os.Message;
 import java.util.LinkedList;
 import java.util.Queue;
 
+@SuppressWarnings("WeakerAccess")
 public class PausedHandler extends Handler {
     private Queue<Message> mQueue = new LinkedList<>();
     private boolean isPaused;

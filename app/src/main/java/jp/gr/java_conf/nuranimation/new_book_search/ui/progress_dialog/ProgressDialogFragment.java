@@ -76,7 +76,7 @@ public class ProgressDialogFragment extends DialogFragment{
             }
         }else{
             progressDialogViewModel.setResult(null);
-            progressDialogViewModel.reload();
+            progressDialogViewModel.reloadNewBooks();
         }
 
     }

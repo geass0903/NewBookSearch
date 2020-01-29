@@ -67,7 +67,7 @@ public class DropboxThread extends BaseThread {
                 mResult = restore();
                 break;
             default:
-                mResult = Result.DropboxError(0,Result.ERROR_CODE_UNKNOWN,"Type Error");
+                mResult = Result.DropboxError(Result.ERROR_CODE_UNKNOWN,"");
                 break;
         }
         if (getThreadListener() != null && !isCanceled()) {
@@ -97,7 +97,7 @@ public class DropboxThread extends BaseThread {
                 if (isCanceled()) {
                     writer.flush();
                     writer.close();
-                    return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_BACKUP_CANCELED, "Backup Canceled.");
+                    return Result.DropboxError(Result.ERROR_CODE_BACKUP_CANCELED, "Backup Canceled.");
                 }
                 writer.write(keyword.getWord() + "\r\n");
                 exportCount++;
@@ -108,18 +108,18 @@ public class DropboxThread extends BaseThread {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_IO_EXCEPTION, "IOException");
+            return Result.DropboxError(Result.ERROR_CODE_IO_EXCEPTION, "IOException");
         }
 
         String token = app.getPreferences().getString(ApplicationData.KEY_ACCESS_TOKEN, null);
         if (token == null) {
-            return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_DBX_EXCEPTION, "No token");
+            return Result.DropboxError(Result.ERROR_CODE_DBX_EXCEPTION, "No token");
         }
         DbxRequestConfig config = new DbxRequestConfig(CLIENT_IDENTIFIER);
         DbxClientV2 client = new DbxClientV2(config, token);
         try {
             if (isCanceled()) {
-                return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_BACKUP_CANCELED, "Backup Canceled");
+                return Result.DropboxError(Result.ERROR_CODE_BACKUP_CANCELED, "Backup Canceled");
             }
             getThreadListener().deliverProgress("", "");
             InputStream input_authors = new FileInputStream(file);
@@ -127,10 +127,10 @@ public class DropboxThread extends BaseThread {
             return Result.DropboxSuccess(TYPE_BACKUP);
         } catch (IOException e) {
             e.printStackTrace();
-            return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_IO_EXCEPTION, "IOException");
+            return Result.DropboxError(Result.ERROR_CODE_IO_EXCEPTION, "IOException");
         } catch (DbxException e) {
             e.printStackTrace();
-            return Result.DropboxError(TYPE_BACKUP, Result.ERROR_CODE_DBX_EXCEPTION, "DbxException");
+            return Result.DropboxError(Result.ERROR_CODE_DBX_EXCEPTION, "DbxException");
         }
     }
 
@@ -141,7 +141,7 @@ public class DropboxThread extends BaseThread {
 
         String token = app.getPreferences().getString(ApplicationData.KEY_ACCESS_TOKEN, null);
         if (token == null) {
-            return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_DBX_EXCEPTION, "No token");
+            return Result.DropboxError(Result.ERROR_CODE_DBX_EXCEPTION, "No token");
         }
         DbxRequestConfig config = new DbxRequestConfig(CLIENT_IDENTIFIER);
         DbxClientV2 client = new DbxClientV2(config, token);
@@ -151,10 +151,10 @@ public class DropboxThread extends BaseThread {
             // Download
             Metadata metadata = getMetadata(client, FILE_NAME);
             if (metadata == null) {
-                return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_FILE_NOT_FOUND, "metadata_books not found");
+                return Result.DropboxError(Result.ERROR_CODE_FILE_NOT_FOUND, "metadata_books not found");
             }
             if (isCanceled()) {
-                return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_DOWNLOAD_CANCELED, "Download canceled");
+                return Result.DropboxError(Result.ERROR_CODE_DOWNLOAD_CANCELED, "Download canceled");
             }
             getThreadListener().deliverProgress("", "");
 
@@ -162,7 +162,7 @@ public class DropboxThread extends BaseThread {
             client.files().download(metadata.getPathLower()).download(output);
 
             if (isCanceled()) {
-                return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_DOWNLOAD_CANCELED, "Download canceled");
+                return Result.DropboxError(Result.ERROR_CODE_DOWNLOAD_CANCELED, "Download canceled");
             }
 
             // import books
@@ -181,7 +181,7 @@ public class DropboxThread extends BaseThread {
             while ((line = br_authors.readLine()) != null) {
                 if (isCanceled()) {
                     br_authors.close();
-                    return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_IMPORT_CANCELED, "import canceled");
+                    return Result.DropboxError(Result.ERROR_CODE_IMPORT_CANCELED, "import canceled");
                 }
                 keywords.add(new Keyword(line));
                 importCount++;
@@ -194,17 +194,17 @@ public class DropboxThread extends BaseThread {
 //                message = mContext.getString(R.string.progress_message_register);
             getThreadListener().deliverProgress(message, "");
             if (isCanceled()) {
-                return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_IMPORT_CANCELED, "import canceled");
+                return Result.DropboxError(Result.ERROR_CODE_IMPORT_CANCELED, "import canceled");
             }
             app.getDatabase().keywordDao().replaceAllKeyword(keywords);
 
             return Result.DropboxSuccess(TYPE_RESTORE);
         } catch (IOException e) {
             e.printStackTrace();
-            return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_IO_EXCEPTION, "IOException");
+            return Result.DropboxError(Result.ERROR_CODE_IO_EXCEPTION, "IOException");
         } catch (DbxException e) {
             e.printStackTrace();
-            return Result.DropboxError(TYPE_RESTORE, Result.ERROR_CODE_DBX_EXCEPTION, "DbxException");
+            return Result.DropboxError(Result.ERROR_CODE_DBX_EXCEPTION, "DbxException");
         }
     }
 

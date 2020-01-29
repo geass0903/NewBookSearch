@@ -3,6 +3,9 @@ package jp.gr.java_conf.nuranimation.new_book_search.model.entity;
 import java.util.List;
 
 public class Result {
+    public static final int ERROR_CODE_NO_ERROR                 =   0;
+
+
     public static final int ERROR_CODE_IO_EXCEPTION             =   1;
     public static final int ERROR_CODE_JSON_EXCEPTION           =   2;
     public static final int ERROR_CODE_DBX_EXCEPTION            =   3;
@@ -22,25 +25,16 @@ public class Result {
 
     public static final int ERROR_CODE_UNKNOWN                  = 100;
 
-
-    private final boolean isSuccess;
     private final int errorCode;
     private final String errorMessage;
-    private final int type;
-    private final List<Item> books;
-    private final boolean hasNext;
 
-    private Result(boolean isSuccess, int errorCode, String errorMessage, int type, List<Item> books, boolean hasNext) {
-        this.isSuccess = isSuccess;
+    private Result(int errorCode, String errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
-        this.type = type;
-        this.books = books;
-        this.hasNext = hasNext;
     }
 
     public boolean isSuccess() {
-        return this.isSuccess;
+        return this.errorCode == ERROR_CODE_NO_ERROR;
     }
 
     public int getErrorCode() {
@@ -51,61 +45,54 @@ public class Result {
         return this.errorMessage;
     }
 
-    public int getType() {
-        return this.type;
-    }
-
-    public List<Item> getBooks() {
-        return this.books;
-    }
-
-    public boolean hasNext() {
-        return this.hasNext;
-    }
-
 
     public static Result DeepCopy(Result result){
-        boolean isSuccess = result.isSuccess();
         int errorCode = result.getErrorCode();
         String errorMessage = result.getErrorMessage();
-        int type = result.getType();
-        List<Item> books = result.getBooks();
-        boolean hasNext = result.hasNext();
-        return new Result(isSuccess, errorCode, errorMessage, type, books, hasNext);
+        return new Result(errorCode, errorMessage);
+    }
+
+
+    public static Result Success(){
+        return new Result(ERROR_CODE_NO_ERROR,"No Error");
+    }
+
+    public static Result Error(int errorCode, String errorMessage){
+        return new Result(errorCode, errorMessage);
     }
 
 
     /*--- File Backup success ---*/
     public static Result DropboxSuccess(int type) {
-        return new Result(true, 0, "No Error", type, null, false);
+        return new Result(ERROR_CODE_NO_ERROR, "No Error");
     }
     /*--- File Backup error ---*/
-    public static Result DropboxError(int type, int errorCode, String errorMessage) {
-        return new Result(false,errorCode, errorMessage ,type, null, false);
+    public static Result DropboxError(int errorCode, String errorMessage) {
+        return new Result(errorCode, errorMessage);
     }
 
     /*--- Search Books success ---*/
-    public static Result SearchSuccess(List<Item> books, boolean hasNext) {
-        return new Result(true, 0, "No Error", 0, books, hasNext);
+    public static Result SearchSuccess() {
+        return new Result(ERROR_CODE_NO_ERROR, "No Error");
     }
 
     /*--- Search Books error ---*/
     public static Result SearchError(int errorCode, String errorMessage) {
-        return new Result(false, errorCode, errorMessage, 0, null, false);
+        return new Result(errorCode, errorMessage);
     }
 
     /*--- Reload NewBooks success ---*/
     public static Result ReloadSuccess(List<Item> books) {
-        return new Result(true, 0, "No Error", 0, books, false);
+        return new Result(ERROR_CODE_NO_ERROR, "No Error");
     }
 
     /*--- Reload NewBooks error ---*/
     public static Result ReloadError(int errorCode, String errorMessage) {
-        return new Result(false, errorCode, errorMessage, 0, null, false);
+        return new Result(errorCode, errorMessage);
     }
 
     /*--- Something error ---*/
     public static Result Error(String errorMessage) {
-        return new Result(false, ERROR_CODE_UNKNOWN, errorMessage, 0, null, false);
+        return new Result(ERROR_CODE_UNKNOWN, errorMessage);
     }
 }
