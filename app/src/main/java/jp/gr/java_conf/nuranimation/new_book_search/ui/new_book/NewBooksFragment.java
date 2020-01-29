@@ -74,7 +74,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         super.onViewCreated(view, savedInstanceState);
         if (D) Log.d(TAG, "onViewCreated");
 
-        if(getArguments() != null){
+        if(savedInstanceState == null && getArguments() != null){
             NewBooksFragmentArgs args = NewBooksFragmentArgs.fromBundle(getArguments());
 
             int id = args.getSrcId();
@@ -84,7 +84,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
             if(result) {
                 newBooksViewModel.loadAllBooks();
-                Toast.makeText(getContext(), getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -2,6 +2,7 @@ package jp.gr.java_conf.nuranimation.new_book_search.model.entity;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Books {
     private int count;
     private int page;

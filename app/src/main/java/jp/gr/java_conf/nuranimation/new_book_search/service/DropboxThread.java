@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.util.IOUtil;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.MetadataV2;
@@ -124,6 +125,7 @@ public class DropboxThread extends BaseThread {
             getThreadListener().deliverProgress("", "");
             InputStream input_authors = new FileInputStream(file);
             client.files().uploadBuilder(DROPBOX_APP_DIR_PATH + FILE_NAME).withMode(WriteMode.OVERWRITE).uploadAndFinish(input_authors);
+
             return Result.DropboxSuccess(TYPE_BACKUP);
         } catch (IOException e) {
             e.printStackTrace();

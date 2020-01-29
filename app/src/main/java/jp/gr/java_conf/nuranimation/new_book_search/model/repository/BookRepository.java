@@ -57,7 +57,7 @@ public class BookRepository {
             while (retried < 3) {
                 try {
                     Thread.sleep(1000);
-                    Response<Books> response = BookRepository.getInstance().search(keyword, page);
+                    Response<Books> response = bookRepository.search(keyword, page);
                     if (response.isSuccessful() && response.code() == HttpURLConnection.HTTP_OK) {
                         Books books = response.body();
                         if (books != null) {
@@ -93,6 +93,7 @@ public class BookRepository {
                     }
                 } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
+                    break;
                 }
                 retried++;
             }
@@ -101,7 +102,7 @@ public class BookRepository {
     }
 
 
-    public Response<Books> search(String keyword, int page) throws IOException {
+    private Response<Books> search(String keyword, int page) throws IOException {
         return booksTotalApi.search(IBooksTotalApi.APPLICATION_ID, QUERY_FORMAT, QUERY_FORMAT_VERSION, QUERY_GENRE,
                 QUERY_HITS, QUERY_STOCK_FLAG, QUERY_FIELD, QUERY_SORT, keyword, page).execute();
     }

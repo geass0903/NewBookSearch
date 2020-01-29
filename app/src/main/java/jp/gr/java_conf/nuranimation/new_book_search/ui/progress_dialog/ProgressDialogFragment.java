@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,9 @@ public class ProgressDialogFragment extends DialogFragment{
             @Override
             public void onChanged(Result result) {
                 if (result != null && progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_COMPLETE) {
+ //                   Toast.makeText(getContext(),getString(R.string.message_success_reload),Toast.LENGTH_SHORT).show();
+
+//                    Toast.makeText(this, getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
                     onFinish(result);
                 }
             }
@@ -59,7 +63,7 @@ public class ProgressDialogFragment extends DialogFragment{
         builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                onFinish(null);
+                progressDialogViewModel.cancel();
             }
         });
 
@@ -72,11 +76,16 @@ public class ProgressDialogFragment extends DialogFragment{
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null){
             if(progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_NONE){
-                onFinish(null);
+                progressDialogViewModel.cancel();
+//                onFinish(null);
+
+
             }
         }else{
             progressDialogViewModel.setResult(null);
-            progressDialogViewModel.reloadNewBooks();
+ //           progressDialogViewModel.reload();
+
+            progressDialogViewModel.backup();
         }
 
     }

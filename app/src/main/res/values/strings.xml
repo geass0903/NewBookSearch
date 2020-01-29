@@ -36,12 +36,13 @@
     <string name="message_success_restore">リストアしました</string>
     <string name="message_success_reload">更新完了しました</string>
 
-    <string name="message_error_empty_keyword">キーワードがありません。</string>
+    <string name="message_error_empty_keywords">キーワードが登録されていません。</string>
     <string name="message_error_canceled">キャンセルされました。</string>
     <string name="message_error_no_books">本が見つかりませんでした。</string>
     <string name="message_error_exists">そのキーワードは既に登録されています。</string>
     <string name="message_error_keyword">半角2文字または全角1文字以上。ひらがな・カタカナ・記号の場合は2文字以上</string>
-
+    <string name="message_error_io_exception">IO Exception</string>
+    <string name="message_error_dbx_exception">DBX Exception</string>
 
     <!-- Notification-->
     <string name="notification_channel_id">NewBookSearch</string>

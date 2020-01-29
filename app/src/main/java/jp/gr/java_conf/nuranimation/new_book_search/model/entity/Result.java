@@ -4,7 +4,8 @@ import java.util.List;
 
 public class Result {
     public static final int ERROR_CODE_NO_ERROR                 =   0;
-
+    public static final int ERROR_CODE_CANCELED                 =   1;
+    public static final int ERROR_CODE_EMPTY_KEYWORDS           =   2;
 
     public static final int ERROR_CODE_IO_EXCEPTION             =   1;
     public static final int ERROR_CODE_JSON_EXCEPTION           =   2;
@@ -13,7 +14,7 @@ public class Result {
     public static final int ERROR_CODE_INTERRUPTED_EXCEPTION    =   5;
     public static final int ERROR_CODE_FILE_NOT_FOUND           =   6;
     public static final int ERROR_CODE_EMPTY_KEYWORD            =   7;
-    public static final int ERROR_CODE_EMPTY_KEYWORDS =   8;
+
     public static final int ERROR_CODE_EXPORT_DIR_NOT_FOUND     =   9;
     public static final int ERROR_CODE_BACKUP_CANCELED =  10;
     public static final int ERROR_CODE_IMPORT_DIR_NOT_FOUND     =  11;
@@ -69,30 +70,5 @@ public class Result {
     /*--- File Backup error ---*/
     public static Result DropboxError(int errorCode, String errorMessage) {
         return new Result(errorCode, errorMessage);
-    }
-
-    /*--- Search Books success ---*/
-    public static Result SearchSuccess() {
-        return new Result(ERROR_CODE_NO_ERROR, "No Error");
-    }
-
-    /*--- Search Books error ---*/
-    public static Result SearchError(int errorCode, String errorMessage) {
-        return new Result(errorCode, errorMessage);
-    }
-
-    /*--- Reload NewBooks success ---*/
-    public static Result ReloadSuccess(List<Item> books) {
-        return new Result(ERROR_CODE_NO_ERROR, "No Error");
-    }
-
-    /*--- Reload NewBooks error ---*/
-    public static Result ReloadError(int errorCode, String errorMessage) {
-        return new Result(errorCode, errorMessage);
-    }
-
-    /*--- Something error ---*/
-    public static Result Error(String errorMessage) {
-        return new Result(ERROR_CODE_UNKNOWN, errorMessage);
     }
 }
