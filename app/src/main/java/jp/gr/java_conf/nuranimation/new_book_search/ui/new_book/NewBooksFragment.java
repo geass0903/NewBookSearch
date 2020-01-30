@@ -23,11 +23,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.ArrayList;
 
-import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooksBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
-import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel;
@@ -77,8 +75,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         if(savedInstanceState == null && getArguments() != null){
             NewBooksFragmentArgs args = NewBooksFragmentArgs.fromBundle(getArguments());
 
-            int id = args.getSrcId();
-            if (D) Log.d(TAG, "onViewCreated" + id);
+  //          int id = args.getSrcId();
+  //          if (D) Log.d(TAG, "onViewCreated" + id);
             boolean result = args.getResult();
             if (D) Log.d(TAG, "onViewCreated" + result);
 
@@ -143,8 +141,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_action_reload) {
-//            getFragmentListener().onFragmentEvent(FragmentEvent.START_RELOAD_NEW_BOOKS);
-            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message","progress");
+            NewBooksFragmentDirections.NewBooksToProgress action
+                    = NewBooksFragmentDirections.newBooksToProgress(ProgressDialogViewModel.TYPE_RELOAD, getString(R.string.dialog_title_reload));
             NavHostFragment.findNavController(this).navigate(action);
         }
         return super.onOptionsItemSelected(item);
@@ -164,8 +162,8 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
 //            NewBooksFragmentDirections.ActionNavigationNewBooksToNavigationDialogJanCode action = NewBooksFragmentDirections.actionNavigationNewBooksToNavigationDialogJanCode(data.getIsbn(),data.getTitle());
 
-            NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message","progress");
-            NavHostFragment.findNavController(this).navigate(action);
+ //           NewBooksFragmentDirections.NewBooksToProgress action = NewBooksFragmentDirections.newBooksToProgress("title","message","progress");
+ //           NavHostFragment.findNavController(this).navigate(action);
 
 //            NavHostFragment.findNavController(this).navigate(action);
 
@@ -177,50 +175,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 //            Navigation.findNavController().navigate(R.id.navigation_dialog_jan_code);
 
 
-        }
-    }
-
-
-    @Override
-    protected void onReceiveLocalBroadcast(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (action != null) {
-            switch (action) {
-                case NewBookService.FILTER_ACTION_UPDATE_SERVICE_STATE:
-                    int state = intent.getIntExtra(NewBookService.KEY_SERVICE_STATE, NewBookService.STATE_NONE);
-                    switch (state) {
-                        case NewBookService.STATE_NONE:
-                            if (D) Log.d(TAG, "STATE_NONE");
-                            break;
-                        case NewBookService.STATE_BACKGROUND_INCOMPLETE:
-                            if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_INCOMPLETE");
-                            break;
-                        case NewBookService.STATE_BACKGROUND_COMPLETE:
-                            if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_COMPLETE");
-                            newBooksViewModel.loadAllBooks();
-                      //      getFragmentListener().onFragmentEvent(FragmentEvent.STOP_RELOAD_NEW_BOOKS);
-                            Toast.makeText(getContext(), getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                    break;
-                case NewBookService.FILTER_ACTION_UPDATE_PROGRESS:
-                    String progress = intent.getStringExtra(NewBookService.KEY_PROGRESS_VALUE);
-                    if (progress == null) {
-                        progress = "";
-                    }
-                    String message = intent.getStringExtra(NewBookService.KEY_PROGRESS_MESSAGE);
-                    if (message == null) {
-                        message = "";
-                    }
-                    Bundle bundle = new Bundle();
-//                    bundle.putString(ProgressDialogFragment.KEY_MESSAGE, message);
-//                    bundle.putString(ProgressDialogFragment.KEY_PROGRESS, progress);
-
-                    progressDialogViewModel.setProgress(progress);
-
-//                    ProgressDialogFragment.updateProgress(this, bundle, TAG_RELOAD_PROGRESS_DIALOG);
-                    break;
-            }
         }
     }
 

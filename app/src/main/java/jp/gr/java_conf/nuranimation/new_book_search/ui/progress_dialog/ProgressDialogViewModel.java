@@ -32,9 +32,15 @@ public class ProgressDialogViewModel extends AndroidViewModel {
     private static final String TAG = ProgressDialogViewModel.class.getSimpleName();
     private static final boolean D = true;
 
+    public static final int TYPE_RELOAD  = 1;
+    public static final int TYPE_BACKUP  = 2;
+    public static final int TYPE_RESTORE = 3;
+
     public static final int STATE_NONE = 0;
     public static final int STATE_PROGRESS = 1;
     public static final int STATE_COMPLETE = 2;
+
+    private static final String FILE_NAME = "backup_keyword.csv";
 
     private Context context;
     private int state;
@@ -43,16 +49,14 @@ public class ProgressDialogViewModel extends AndroidViewModel {
     private MutableLiveData<String> progress;
     private MutableLiveData<Result> result;
 
-    private ApplicationData mApp;
-
     private ReloadAsyncTask reloadAsyncTask;
     private BackupAsyncTask backupAsyncTask;
+    private RestoreAsyncTask restoreAsyncTask;
 
     public ProgressDialogViewModel(@NonNull Application application) {
         super(application);
         if (D) Log.d(TAG, "ProgressDialogViewModel()");
         context = application.getApplicationContext();
-        mApp = (ApplicationData) context;
         state = STATE_NONE;
         title = new MutableLiveData<>();
         message = new MutableLiveData<>();
@@ -60,6 +64,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         result = new MutableLiveData<>();
         reloadAsyncTask = null;
         backupAsyncTask = null;
+        reloadAsyncTask = null;
     }
 
     public int getState() {
@@ -103,27 +108,23 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         this.result.postValue(result);
     }
 
-
-    public void reload() {
-        reloadAsyncTask = new ReloadAsyncTask(this);
-        reloadAsyncTask.execute();
-    }
-
-    public void backup(){
-        backupAsyncTask = new BackupAsyncTask(this);
-        backupAsyncTask.execute();
-    }
-
-    public void restore(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                setState(STATE_PROGRESS);
-
-                setState(STATE_COMPLETE);
-                setResult(null);
-            }
-        }).start();
+    public void start(int type) {
+        switch (type) {
+            case TYPE_RELOAD:
+                reloadAsyncTask = new ReloadAsyncTask(this);
+                reloadAsyncTask.execute();
+                break;
+            case TYPE_BACKUP:
+                backupAsyncTask = new BackupAsyncTask(this);
+                backupAsyncTask.execute();
+                break;
+            case TYPE_RESTORE:
+                restoreAsyncTask = new RestoreAsyncTask(this);
+                restoreAsyncTask.execute();
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -134,15 +135,16 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         if(backupAsyncTask != null){
             backupAsyncTask.onCancel();
         }
+        if(restoreAsyncTask != null){
+            restoreAsyncTask.onCancel();
+        }
+        setState(STATE_NONE);
     }
 
     @Override
     protected void onCleared() {
         if (D) Log.d(TAG, "onCleared()");
-        if(reloadAsyncTask != null){
-            reloadAsyncTask.onCancel();
-        }
-
+        cancel();
     }
 
 
@@ -163,7 +165,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         @Override
         protected Result doInBackground(Void... aVoid) {
             if (D) Log.d(TAG, "ReloadAsyncTask.doInBackground()");
-            List<String> keywords = KeywordRepository.getInstance(model.context).getKeywordList();
+            List<String> keywords = KeywordRepository.getInstance().loadKeywordList(model.context);
             if (keywords.size() == 0) {
                 return Result.Error(Result.ERROR_CODE_EMPTY_KEYWORDS, model.context.getString(R.string.message_error_empty_keywords));
             }
@@ -188,7 +190,8 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             }
 
             if(!isCancelled()){
-                model.mApp.getDatabase().bookDao().replaceAll(books);
+                ApplicationData app = (ApplicationData) model.context.getApplicationContext();
+                app.getDatabase().bookDao().replaceAll(books);
                 return Result.Success();
             }else{
                 return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
@@ -221,7 +224,6 @@ public class ProgressDialogViewModel extends AndroidViewModel {
 
 
     private static class BackupAsyncTask extends AsyncTask<Void,Void,Result>{
-        private static final String FILE_NAME = "backup_keyword.csv";
         private final ProgressDialogViewModel model;
 
         public BackupAsyncTask(ProgressDialogViewModel model){
@@ -238,7 +240,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         protected Result doInBackground(Void... aVoid) {
             if (D) Log.d(TAG, "BackupAsyncTask.doInBackground()");
             File file = new File(model.context.getFilesDir(), FILE_NAME);
-            List<String> keywords = KeywordRepository.getInstance(model.context).getKeywordList();
+            List<String> keywords = KeywordRepository.getInstance().loadKeywordList(model.context);
 
             try {
                 FileRepository.getInstance().write(file, keywords);
@@ -275,6 +277,72 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         @Override
         protected void onCancelled() {
             if (D) Log.d(TAG, "BackupAsyncTask.onCancelled()");
+            model.setState(STATE_NONE);
+        }
+
+        public void onCancel(){
+            cancel(true);
+        }
+
+    }
+
+
+    private static class RestoreAsyncTask extends AsyncTask<Void,Void,Result>{
+
+        private final ProgressDialogViewModel model;
+
+        public RestoreAsyncTask(ProgressDialogViewModel model){
+            this.model = model;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (D) Log.d(TAG, "RestoreAsyncTask.onPreExecute()");
+            model.setState(ProgressDialogViewModel.STATE_PROGRESS);
+        }
+
+        @Override
+        protected Result doInBackground(Void... aVoid) {
+            if (D) Log.d(TAG, "RestoreAsyncTask.doInBackground()");
+
+            File file = new File(model.context.getFilesDir(), FILE_NAME);
+
+            try{
+                DropboxRepository.getInstance().download(model.context, file);
+                List<String> list = FileRepository.getInstance().read(file);
+                if(isCancelled()){
+                    return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
+                }
+                KeywordRepository.getInstance().saveKeywordList(model.context, list);
+                return Result.Success();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return Result.Error(Result.ERROR_CODE_IO_EXCEPTION, model.context.getString(R.string.message_error_io_exception));
+            } catch (DbxException e) {
+                e.printStackTrace();
+                return Result.Error(Result.ERROR_CODE_DBX_EXCEPTION, model.context.getString(R.string.message_error_dbx_exception));
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            if (D) Log.d(TAG, "RestoreAsyncTask.onPostExecute()");
+            if(result.isSuccess()) {
+                Toast.makeText(model.context, model.context.getString(R.string.message_success_restore), Toast.LENGTH_SHORT).show();
+                model.setState(STATE_COMPLETE);
+                model.setResult(result);
+            }else{
+                Toast.makeText(model.context, result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                if(result.getErrorCode() != Result.ERROR_CODE_CANCELED){
+                    model.setState(STATE_COMPLETE);
+                    model.setResult(result);
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            if (D) Log.d(TAG, "RestoreAsyncTask.onCancelled()");
             model.setState(STATE_NONE);
         }
 

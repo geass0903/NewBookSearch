@@ -1,12 +1,6 @@
 package jp.gr.java_conf.nuranimation.new_book_search;
 
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,33 +11,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
-
-public class MainActivity extends AppCompatActivity implements BaseFragment.FragmentListener {
+public class MainActivity extends AppCompatActivity{
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final boolean D = true;
-
-    private NewBookService mService;
-
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            if (D) Log.d(TAG, "onServiceConnected");
-            mService = ((NewBookService.MBinder)binder).getService();
-            mService.cancelForeground();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            if (D) Log.e(TAG, "onServiceDisconnected");
-        }
-    };
-
-    public NewBookService getService(){
-        return mService;
-    }
 
 
     @Override
@@ -77,27 +47,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     public synchronized void onResumeFragments() {
         super.onResumeFragments();
         if (D) Log.e(TAG, "+ ON RESUME FRAGMENTS +");
-        if(mService == null){
-            Intent intent = new Intent(this, NewBookService.class);
-            bindService(intent,connection, Service.BIND_AUTO_CREATE);
-        }else{
-            mService.cancelForeground();
-            mService.checkServiceState();
-        }
     }
 
     @Override
     public synchronized void onPause() {
         super.onPause();
         if (D) Log.e(TAG, "- ON PAUSE - ");
-        if (mService != null && mService.getServiceState() != NewBookService.STATE_NONE) {
-            Intent intent = new Intent(this, NewBookService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
- //               startForegroundService(intent);
-            } else {
-//                startService(intent);
-            }
-        }
     }
 
 
@@ -111,16 +66,6 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     public void onDestroy() {
         super.onDestroy();
         if (D) Log.e(TAG, "--- ON DESTROY ---");
-        if(mService != null) {
-            unbindService(connection);
-            mService = null;
-        }
-    }
-
-
-    @Override
-    public void onFragmentEvent(FragmentEvent event) {
-        event.apply(this);
     }
 
 }

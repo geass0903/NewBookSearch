@@ -11,23 +11,22 @@ import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 public class KeywordRepository {
 
     private static  KeywordRepository keywordRepository;
-    private ApplicationData mApp;
 
-    private KeywordRepository(Context context){
-        mApp = (ApplicationData) context;
+    private KeywordRepository(){
     }
 
 
-    public synchronized static KeywordRepository getInstance(Context context){
+    public synchronized static KeywordRepository getInstance(){
         if(keywordRepository == null){
-            keywordRepository = new KeywordRepository(context);
+            keywordRepository = new KeywordRepository();
         }
         return keywordRepository;
     }
 
 
-    public List<String> getKeywordList(){
-        List<Keyword> allKeyword = mApp.getDatabase().keywordDao().loadAllKeyword();
+    public List<String> loadKeywordList(Context context){
+        ApplicationData app = (ApplicationData) context.getApplicationContext();
+        List<Keyword> allKeyword = app.getDatabase().keywordDao().loadAllKeyword();
         List<String> keywords = new ArrayList<>();
         for(Keyword keyword : allKeyword){
             if(!keywords.contains(keyword.getWord())){
@@ -35,6 +34,15 @@ public class KeywordRepository {
             }
         }
         return keywords;
+    }
+
+    public void saveKeywordList(Context context, List<String> list){
+        ApplicationData app = (ApplicationData) context.getApplicationContext();
+        List<Keyword> keywords = new ArrayList<>();
+        for(String keyword : list){
+            keywords.add(new Keyword(keyword));
+        }
+        app.getDatabase().keywordDao().replaceAllKeyword(keywords);
     }
 
 }

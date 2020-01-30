@@ -1,10 +1,13 @@
 package jp.gr.java_conf.nuranimation.new_book_search.model.repository;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.model.utils.NewBookUtils;
@@ -36,5 +39,15 @@ public class FileRepository {
         writer.close();
     }
 
+    public List<String> read(File file) throws IOException {
+        List<String> list = new ArrayList<>();
+        BufferedReader reader = NewBookUtils.getBufferedReaderSkipBOM(new FileInputStream(file), Charset.forName("UTF-8"));
+        String line;
+        while( (line = reader.readLine()) != null){
+            list.add(line);
+        }
+        reader.close();
+        return list;
+    }
 
 }

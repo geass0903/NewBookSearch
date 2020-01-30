@@ -2,7 +2,6 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +15,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.dropbox.core.android.Auth;
 
-import jp.gr.java_conf.nuranimation.new_book_search.FragmentEvent;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentSettingsBinding;
-import jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
 
@@ -106,11 +103,9 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
                     break;
                 case R.id.button_backup:
                     if(D) Log.d(TAG,"backup");
-                    getFragmentListener().onFragmentEvent(FragmentEvent.START_BACKUP_DROPBOX);
                     break;
                 case R.id.button_restore:
                     if(D) Log.d(TAG,"restore");
-                    getFragmentListener().onFragmentEvent(FragmentEvent.START_RESTORE_DROPBOX);
                     break;
             }
 
@@ -138,40 +133,6 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
     @Override
     public void onNormalDialogCancelled(int requestCode, Bundle params) {
 
-    }
-
-    /*
-    @Override
-    public void onProgressDialogCancelled(int requestCode, Bundle params) {
-        if(requestCode == REQUEST_CODE_BACKUP_PROGRESS){
-            getFragmentListener().onFragmentEvent(FragmentEvent.STOP_BACKUP_DROPBOX);
-        }
-    }
-
-     */
-    @Override
-    protected void onReceiveLocalBroadcast(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (action != null) {
-            switch (action) {
-                case NewBookService.FILTER_ACTION_UPDATE_SERVICE_STATE:
-                    int state = intent.getIntExtra(NewBookService.KEY_SERVICE_STATE, NewBookService.STATE_NONE);
-                    switch (state) {
-                        case NewBookService.STATE_NONE:
-                            if (D) Log.d(TAG, "STATE_NONE");
-                            break;
-                        case NewBookService.STATE_BACKGROUND_INCOMPLETE:
-                            if (D) Log.d(TAG, "STATE_NEW_BOOKS_RELOAD_INCOMPLETE");
-                            break;
-                        case NewBookService.STATE_BACKGROUND_COMPLETE:
-                            if (D) Log.d(TAG, "STATE_BACKUP_COMPLETE");
-                            break;
-                    }
-                    break;
-                case NewBookService.FILTER_ACTION_UPDATE_PROGRESS:
-                    break;
-            }
-        }
     }
 
 }

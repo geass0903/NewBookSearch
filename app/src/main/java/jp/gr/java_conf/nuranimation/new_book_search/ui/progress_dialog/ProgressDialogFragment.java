@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,18 +39,16 @@ public class ProgressDialogFragment extends DialogFragment{
 
         ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
         final DialogProgressBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.dialog_progress, null, false);
-        binding.progressDialogTitle.setText(args.getTitle());
-        binding.progressDialogMessage.setText(args.getMessage());
-        binding.progressDialogProgress.setText(args.getProgress());
         binding.setLifecycleOwner(this);
         binding.setViewModel(progressDialogViewModel);
+        progressDialogViewModel.setTitle(args.getTitle());
+        progressDialogViewModel.setMessage(args.getMessage());
+        progressDialogViewModel.setProgress(args.getProgress());
+
         progressDialogViewModel.getResult().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
                 if (result != null && progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_COMPLETE) {
- //                   Toast.makeText(getContext(),getString(R.string.message_success_reload),Toast.LENGTH_SHORT).show();
-
-//                    Toast.makeText(this, getString(R.string.message_success_reload), Toast.LENGTH_SHORT).show();
                     onFinish(result);
                 }
             }
@@ -60,48 +57,58 @@ public class ProgressDialogFragment extends DialogFragment{
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
 
-        builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                progressDialogViewModel.cancel();
-            }
-        });
+        if(args.getType() == ProgressDialogViewModel.TYPE_RELOAD) {
+            builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(D) Log.d(TAG,"NegativeButton.onClick");
+                    progressDialogViewModel.cancel();
+                }
+            });
+        }
 
         return builder.create();
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null){
-            if(progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_NONE){
+        if (savedInstanceState != null) {
+            if (progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_NONE) {
                 progressDialogViewModel.cancel();
-//                onFinish(null);
-
-
+                onFinish(null);
             }
-        }else{
-            progressDialogViewModel.setResult(null);
- //           progressDialogViewModel.reload();
-
-            progressDialogViewModel.backup();
+        } else {
+            if (getArguments() != null) {
+                ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
+                progressDialogViewModel.setResult(null);
+                progressDialogViewModel.start(args.getType());
+            }
         }
-
     }
 
-
-
-    private void onFinish(Result result){
-        progressDialogViewModel.setState(ProgressDialogViewModel.STATE_NONE);
-        ProgressDialogFragmentDirections.ProgressToNewBooks action = ProgressDialogFragmentDirections.progressToNewBooks();
-
-        if(result != null){
-            if(D) Log.d(TAG,"result : " + result);
-            action.setSrcId(1);
-            action.setResult(true);
+    private void onFinish(@Nullable Result result) {
+        if(D) Log.d(TAG,"onFinish");
+        if (getArguments() != null) {
+            ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
+            switch (args.getType()) {
+                case ProgressDialogViewModel.TYPE_RELOAD:
+                    ProgressDialogFragmentDirections.ProgressToNewBooks actionToNewBooks = ProgressDialogFragmentDirections.progressToNewBooks();
+                    if (result != null) {
+                        actionToNewBooks.setResult(result.isSuccess());
+                    }
+                    NavHostFragment.findNavController(this).navigate(actionToNewBooks);
+                    break;
+                case ProgressDialogViewModel.TYPE_BACKUP:
+                case ProgressDialogViewModel.TYPE_RESTORE:
+                    ProgressDialogFragmentDirections.ProgressToSettings actionToSettings = ProgressDialogFragmentDirections.progressToSettings();
+                    if (result != null) {
+                        actionToSettings.setResult(result.isSuccess());
+                    }
+                    NavHostFragment.findNavController(this).navigate(actionToSettings);
+                    break;
+            }
         }
-        NavHostFragment.findNavController(this).navigate(action);
     }
 
 }
