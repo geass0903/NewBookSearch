@@ -14,7 +14,7 @@ import java.util.List;
 import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 
-
+@SuppressWarnings("WeakerAccess")
 public class NewBooksViewModel extends AndroidViewModel {
 
     private ApplicationData mApp;

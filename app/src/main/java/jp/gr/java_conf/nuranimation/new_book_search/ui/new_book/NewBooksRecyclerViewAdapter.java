@@ -2,7 +2,6 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.new_book;
 
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,7 @@ import java.util.regex.Pattern;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.ItemBookBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 
-
+@SuppressWarnings("WeakerAccess")
 public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
     private List<Item> items;
@@ -32,12 +31,9 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private RecyclerView mRecyclerView;
     private OnItemClickListener mListener;
 
-
-
     public interface OnItemClickListener {
         void onItemClick(NewBooksRecyclerViewAdapter adapter, int position, Item data);
     }
-
 
     public NewBooksRecyclerViewAdapter(List<Item> items) {
         this.items = items;
@@ -122,8 +118,6 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
 
-
-
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
        final ItemBookBinding binding;
 
@@ -132,7 +126,6 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             this.binding = binding;
         }
     }
-
 
     private static String parseUrlString(String url) {
         if (TextUtils.isEmpty(url)) {
@@ -195,6 +188,5 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
         }
     }
-
 
 }
