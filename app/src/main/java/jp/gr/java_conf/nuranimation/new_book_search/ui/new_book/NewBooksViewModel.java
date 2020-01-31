@@ -11,20 +11,19 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
+import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 
 @SuppressWarnings("WeakerAccess")
 public class NewBooksViewModel extends AndroidViewModel {
 
-    private ApplicationData mApp;
+    private Context context;
     private MutableLiveData<List<Item>> mBooks;
 
 
     public NewBooksViewModel(@NonNull Application application) {
         super(application);
-        Context context = application.getApplicationContext();
-        mApp = (ApplicationData)context;
+        context = application.getApplicationContext();
         if(mBooks != null) {
             Log.d("NewBooksViewModel", "mBooks" + mBooks.getValue());
         }
@@ -40,7 +39,7 @@ public class NewBooksViewModel extends AndroidViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mBooks.postValue(mApp.getDatabase().bookDao().loadAllBooks());
+                mBooks.postValue(AppDatabase.getInstance(context).bookDao().loadAllBooks());
             }
         }).start();
     }

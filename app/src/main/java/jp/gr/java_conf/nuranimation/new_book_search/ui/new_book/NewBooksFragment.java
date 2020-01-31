@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooksBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
+import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogFragment;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel;
 
-public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener {
+public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener, ProgressDialogFragment.OnProgressDialogListener {
     private static final String TAG = NewBooksFragment.class.getSimpleName();
     private static final boolean D = true;
 
@@ -121,6 +123,16 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
             NewBooksFragmentDirections.NewBooksToJanCode actionToJanCode
                     = NewBooksFragmentDirections.newBooksToJanCode(data.getIsbn(), data.getTitle());
             NavHostFragment.findNavController(this).navigate(actionToJanCode);
+        }
+    }
+
+    @Override
+    public void onProgressDialogSucceeded(int requestCode, Result result) {
+        if(requestCode == ProgressDialogFragment.REQUEST_CODE_PROGRESS_DIALOG){
+            if (D) Log.d(TAG, "onProgressDialogSucceeded : " + result);
+            if(result.isSuccess()){
+                newBooksViewModel.loadAllBooks();
+            }
         }
     }
 

@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="SpUsage"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-    <TextView
-        android:id="@+id/book_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_large"
-        android:textAlignment="center"
-        android:textSize="@dimen/text_size_large"
-        android:textColor="#FF000000"
-        />
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <ImageView
-        android:id="@+id/jan_code"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.jan_code_dialog.JanCodeDialogViewModel" />
+    </data>
 
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:contentDescription="@string/label_isbn" />
-    <TextView
-        android:id="@+id/isbn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_large"
-        android:textAlignment="center"
-        android:textSize="@dimen/text_size_large"
-        android:textColor="#FF000000"
-        />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_large"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textColor="#FF000000"
+            android:text="@{viewModel.title}"
+            />
+        <ImageView
+            android:id="@+id/jan_code"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:contentDescription="@string/label_isbn"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            app:janCode="@{viewModel.isbn}"
+            />
+        <TextView
+            android:id="@+id/isbn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_large"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_xlarge"
+            android:textColor="#FF000000"
+            android:text="@{viewModel.isbn}"
+            />
+    </LinearLayout>
 
-
-
-
-</LinearLayout>
+</layout>

@@ -38,9 +38,20 @@
         tools:layout="@layout/fragment_settings" >
         <argument android:name="result" app:argType="boolean" android:defaultValue="false"/>
         <action
-            android:id="@+id/settings_progress"
+            android:id="@+id/settings_to_progress"
             app:destination="@id/progress" />
+        <action
+            android:id="@+id/settings_to_normal"
+            app:destination="@id/normal" />
     </fragment>
+
+
+    <dialog
+        android:id="@+id/normal"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment">
+        <argument android:name="title" app:argType="string" />
+    </dialog>
+
 
     <dialog
         android:id="@+id/progress"
@@ -76,7 +87,7 @@
 
     <dialog
         android:id="@+id/jan_code"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.JanCodeDialogFragment"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.jan_code_dialog.JanCodeDialogFragment"
         tools:layout="@layout/dialog_jan_code" >
         <argument android:name="isbn" app:argType="string" />
         <argument android:name="title" app:argType="string" />

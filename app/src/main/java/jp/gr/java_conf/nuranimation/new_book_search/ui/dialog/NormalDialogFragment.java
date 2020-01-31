@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.fragment.NavHostFragment;
 
 public class NormalDialogFragment extends DialogFragment {
     private static final String TAG = NormalDialogFragment.class.getSimpleName();
@@ -58,7 +59,7 @@ public class NormalDialogFragment extends DialogFragment {
             }
         }
         if (mListener == null) {
-            throw new UnsupportedOperationException("Listener is not Implementation.");
+ //           throw new UnsupportedOperationException("Listener is not Implementation.");
         }
     }
 
@@ -82,18 +83,31 @@ public class NormalDialogFragment extends DialogFragment {
         final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dismiss();
+                if (D) Log.d(TAG, "onClick" + getTargetFragment());
+
+                Fragment fragment = getFragmentManager().getFragments().get(0);
+                if(fragment instanceof OnNormalDialogListener){
+                    if (D) Log.d(TAG, "onClick" + getTargetFragment());
+                    ((OnNormalDialogListener) fragment).onNormalDialogSucceeded(0,which,null);
+                }
+                if(getTargetFragment() != null) {
+                    if (D) Log.d(TAG, "onClick" + getTargetFragment());
+                    getTargetFragment().onActivityResult(0, 0, null);
+                }
+//                dismiss();
                 if (getArguments() != null && mListener != null) {
-                    mListener.onNormalDialogSucceeded(getRequestCode(), which, getArguments().getBundle(KEY_PARAMS));
+
+
+//                    mListener.onNormalDialogSucceeded(getRequestCode(), which, getArguments().getBundle(KEY_PARAMS));
                 }
             }
         };
 
-        final String title = bundle.getString(KEY_TITLE);
-        final String message = bundle.getString(KEY_MESSAGE);
+        final String title = bundle.getString(KEY_TITLE,"title");
+        final String message = bundle.getString(KEY_MESSAGE,"message");
         final String[] items = bundle.getStringArray(KEY_ITEMS);
-        final String positiveLabel = bundle.getString(KEY_POSITIVE_LABEL);
-        final String negativeLabel = bundle.getString(KEY_NEGATIVE_LABEL);
+        final String positiveLabel = bundle.getString(KEY_POSITIVE_LABEL,"positive");
+        final String negativeLabel = bundle.getString(KEY_NEGATIVE_LABEL,"negative");
         setCancelable(bundle.getBoolean(KEY_CANCELABLE,true));
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 

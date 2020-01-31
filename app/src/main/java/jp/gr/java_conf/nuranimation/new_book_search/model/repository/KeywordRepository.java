@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
+import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 
 public class KeywordRepository {
@@ -25,8 +25,7 @@ public class KeywordRepository {
 
 
     public List<String> loadKeywordList(Context context){
-        ApplicationData app = (ApplicationData) context.getApplicationContext();
-        List<Keyword> allKeyword = app.getDatabase().keywordDao().loadAllKeyword();
+        List<Keyword> allKeyword = AppDatabase.getInstance(context).keywordDao().loadAllKeyword();
         List<String> keywords = new ArrayList<>();
         for(Keyword keyword : allKeyword){
             if(!keywords.contains(keyword.getWord())){
@@ -37,12 +36,11 @@ public class KeywordRepository {
     }
 
     public void saveKeywordList(Context context, List<String> list){
-        ApplicationData app = (ApplicationData) context.getApplicationContext();
         List<Keyword> keywords = new ArrayList<>();
         for(String keyword : list){
             keywords.add(new Keyword(keyword));
         }
-        app.getDatabase().keywordDao().replaceAllKeyword(keywords);
+        AppDatabase.getInstance(context).keywordDao().replaceAllKeyword(keywords);
     }
 
 }

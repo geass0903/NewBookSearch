@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
-import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
+import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
+import jp.gr.java_conf.nuranimation.new_book_search.model.preference.Preference;
 import jp.gr.java_conf.nuranimation.new_book_search.model.repository.BookRepository;
-import jp.gr.java_conf.nuranimation.new_book_search.model.repository.DropboxRepository;
-import jp.gr.java_conf.nuranimation.new_book_search.model.repository.FileRepository;
+import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.DropboxApi;
+import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.FileApi;
 import jp.gr.java_conf.nuranimation.new_book_search.model.repository.KeywordRepository;
 
 
@@ -190,8 +191,8 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             }
 
             if(!isCancelled()){
-                ApplicationData app = (ApplicationData) model.context.getApplicationContext();
-                app.getDatabase().bookDao().replaceAll(books);
+                AppDatabase database = AppDatabase.getInstance(model.context);
+                database.bookDao().replaceAll(books);
                 return Result.Success();
             }else{
                 return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
@@ -243,11 +244,12 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             List<String> keywords = KeywordRepository.getInstance().loadKeywordList(model.context);
 
             try {
-                FileRepository.getInstance().write(file, keywords);
+                FileApi.getInstance().write(file, keywords);
                 if (isCancelled()) {
                     return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
                 }
-                DropboxRepository.getInstance().upload(model.context, file);
+                String token = Preference.getInstance().getAccessToken(model.context);
+                DropboxApi.getInstance().upload(token, file);
                 return Result.Success();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -308,8 +310,9 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             File file = new File(model.context.getFilesDir(), FILE_NAME);
 
             try{
-                DropboxRepository.getInstance().download(model.context, file);
-                List<String> list = FileRepository.getInstance().read(file);
+                String token = Preference.getInstance().getAccessToken(model.context);
+                DropboxApi.getInstance().download(token, file);
+                List<String> list = FileApi.getInstance().read(file);
                 if(isCancelled()){
                     return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
                 }

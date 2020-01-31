@@ -8,6 +8,9 @@
         <variable
             name="viewModel"
             type="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksViewModel" />
+        <variable
+            name="adapter"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksRecyclerViewAdapter" />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView

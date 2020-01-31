@@ -1,6 +1,7 @@
 package jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,19 +12,40 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.fragment.NavHostFragment;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.DialogProgressBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 
-public class ProgressDialogFragment extends DialogFragment{
+public class ProgressDialogFragment extends DialogFragment {
     private static final String TAG = ProgressDialogFragment.class.getSimpleName();
     private static final boolean D = true;
 
+    public static final int REQUEST_CODE_PROGRESS_DIALOG = 101;
+
     private ProgressDialogViewModel progressDialogViewModel;
+    private OnProgressDialogListener onProgressDialogListener;
+
+    public interface OnProgressDialogListener {
+        void onProgressDialogSucceeded(int requestCode, Result result);
+    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (getFragmentManager() != null) {
+            Fragment fragment = getFragmentManager().getFragments().get(0);
+            if (fragment instanceof OnProgressDialogListener) {
+                onProgressDialogListener = (OnProgressDialogListener) fragment;
+            } else {
+                throw new UnsupportedOperationException("Listener is not Implementation.");
+            }
+        }
+    }
 
     @NonNull
     @Override
@@ -49,7 +71,8 @@ public class ProgressDialogFragment extends DialogFragment{
             @Override
             public void onChanged(Result result) {
                 if (result != null && progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_COMPLETE) {
-                    onFinish(result);
+                    onProgressDialogListener.onProgressDialogSucceeded(REQUEST_CODE_PROGRESS_DIALOG, result);
+                    dismiss();
                 }
             }
         });
@@ -57,11 +80,11 @@ public class ProgressDialogFragment extends DialogFragment{
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
 
-        if(args.getType() == ProgressDialogViewModel.TYPE_RELOAD) {
+        if (args.getType() == ProgressDialogViewModel.TYPE_RELOAD) {
             builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if(D) Log.d(TAG,"NegativeButton.onClick");
+                    if (D) Log.d(TAG, "NegativeButton.onClick");
                     progressDialogViewModel.cancel();
                 }
             });
@@ -76,7 +99,7 @@ public class ProgressDialogFragment extends DialogFragment{
         if (savedInstanceState != null) {
             if (progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_NONE) {
                 progressDialogViewModel.cancel();
-                onFinish(null);
+                dismiss();
             }
         } else {
             if (getArguments() != null) {
@@ -87,33 +110,6 @@ public class ProgressDialogFragment extends DialogFragment{
         }
     }
 
-    private void onFinish(@Nullable Result result) {
-        if(D) Log.d(TAG,"onFinish");
-        if (getArguments() != null) {
-            ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
-            switch (args.getType()) {
-                case ProgressDialogViewModel.TYPE_RELOAD:
-                    ProgressDialogFragmentDirections.ProgressToNewBooks actionToNewBooks = ProgressDialogFragmentDirections.progressToNewBooks();
-                    if (result != null) {
-                        actionToNewBooks.setResult(result.isSuccess());
-                    }
-                    NavHostFragment.findNavController(this).navigate(actionToNewBooks);
-                    break;
-                case ProgressDialogViewModel.TYPE_BACKUP:
-                case ProgressDialogViewModel.TYPE_RESTORE:
-                    ProgressDialogFragmentDirections.ProgressToSettings actionToSettings = ProgressDialogFragmentDirections.progressToSettings();
-                    if (result != null) {
-                        actionToSettings.setResult(result.isSuccess());
-                    }
-                    NavHostFragment.findNavController(this).navigate(actionToSettings);
-                    break;
-            }
-        }
-    }
-
-
-
 }
-
 
 

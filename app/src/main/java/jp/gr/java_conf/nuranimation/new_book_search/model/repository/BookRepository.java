@@ -69,6 +69,7 @@ public class BookRepository {
                                 if (isNewBook(book)) {
                                     new_books.add(book);
                                 } else {
+                                    hasNext = false;
                                     break search;
                                 }
                             }
@@ -76,6 +77,7 @@ public class BookRepository {
                             break;
                         } else {
                             // No books
+                            hasNext = false;
                             break search;
                         }
                     } else {
@@ -110,7 +112,7 @@ public class BookRepository {
 
     private static boolean isNewBook(@NonNull Item book){
         Calendar baseDate = Calendar.getInstance();
-        baseDate.add(Calendar.MONTH,-12);
+        baseDate.add(Calendar.MONTH,-1);
         Calendar salesDate = parseDateString(book.getSalesDate());
         if(salesDate != null){
             return salesDate.compareTo(baseDate) >= 0;

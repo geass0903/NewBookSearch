@@ -11,19 +11,18 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
+import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 
 
 public class KeywordsViewModel extends AndroidViewModel {
 
-    private ApplicationData mApp;
+    private Context context;
     private MutableLiveData<List<Keyword>> mKeywords;
 
     public KeywordsViewModel(@NonNull Application application) {
         super(application);
-        Context context = application.getApplicationContext();
-        mApp = (ApplicationData)context;
+        context = application.getApplicationContext();
         mKeywords = new MutableLiveData<>();
         loadKeywords();
     }
@@ -37,7 +36,7 @@ public class KeywordsViewModel extends AndroidViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mKeywords.postValue(mApp.getDatabase().keywordDao().loadAllKeyword());
+                mKeywords.postValue(AppDatabase.getInstance(context).keywordDao().loadAllKeyword());
             }
         }).start();
     }
@@ -50,8 +49,9 @@ public class KeywordsViewModel extends AndroidViewModel {
             public void run() {
                 Log.d("TAG","id: " + keyword.getId());
                 Log.d("TAG","word: " + keyword.getWord());
-                mApp.getDatabase().keywordDao().registerKeyword(keyword);
-                mKeywords.postValue(mApp.getDatabase().keywordDao().loadAllKeyword());
+                AppDatabase database = AppDatabase.getInstance(context);
+                database.keywordDao().registerKeyword(keyword);
+                mKeywords.postValue(database.keywordDao().loadAllKeyword());
             }
         }).start();
     }
@@ -62,8 +62,9 @@ public class KeywordsViewModel extends AndroidViewModel {
             public void run() {
                 Log.d("TAG","id: " + keyword.getId());
                 Log.d("TAG","word: " + keyword.getWord());
-                mApp.getDatabase().keywordDao().deleteKeyword(keyword);
-                mKeywords.postValue(mApp.getDatabase().keywordDao().loadAllKeyword());
+                AppDatabase database = AppDatabase.getInstance(context);
+                database.keywordDao().deleteKeyword(keyword);
+                mKeywords.postValue(database.keywordDao().loadAllKeyword());
             }
         }).start();
     }

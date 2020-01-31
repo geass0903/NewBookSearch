@@ -2,7 +2,6 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.settings;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,17 +10,20 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.dropbox.core.android.Auth;
 
-import jp.gr.java_conf.nuranimation.new_book_search.ApplicationData;
+import jp.gr.java_conf.nuranimation.new_book_search.model.preference.Preference;
+import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.DropboxApi;
 
+@SuppressWarnings("WeakerAccess")
 public class SettingsViewModel extends AndroidViewModel {
 
-    private ApplicationData mApp;
+    private static final String DROP_BOX_KEY = "sf7d9ckccl57xvf";
+    private Context context;
     private MutableLiveData<String> mToken;
+
 
     public SettingsViewModel(@NonNull Application application) {
         super(application);
-        Context context = application.getApplicationContext();
-        mApp = (ApplicationData)context;
+        context = application.getApplicationContext();
         mToken = new MutableLiveData<>();
     }
 
@@ -29,22 +31,24 @@ public class SettingsViewModel extends AndroidViewModel {
         return mToken;
     }
 
+    public void authDropbox(){
+        DropboxApi.getInstance().startAuth(context);
+    }
+
+
     public void checkAccessToken(){
         String token = Auth.getOAuth2Token();
         if(token != null){
-            mApp.getPreferences().edit().putString(ApplicationData.KEY_ACCESS_TOKEN,token).apply();
-            Log.d("checkAccessToken","token : " + token);
+            Preference.getInstance().setAccessToken(context, token);
             mToken.postValue(token);
         }else{
-            token = mApp.getPreferences().getString(ApplicationData.KEY_ACCESS_TOKEN, null);
-            Log.d("checkAccessToken","preference token : " + token);
+            token = Preference.getInstance().getAccessToken(context);
             mToken.postValue(token);
         }
     }
 
     public void deleteAccessToken(){
-        mApp.getPreferences().edit().remove(ApplicationData.KEY_ACCESS_TOKEN).apply();
-        Log.d("checkAccessToken","delete token : ");
+        Preference.getInstance().deleteAccessToken(context);
         mToken.postValue(null);
     }
 
