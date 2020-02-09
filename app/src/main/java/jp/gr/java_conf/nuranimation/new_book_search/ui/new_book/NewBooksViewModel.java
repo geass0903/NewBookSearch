@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.model.repository.BookRepository;
 
