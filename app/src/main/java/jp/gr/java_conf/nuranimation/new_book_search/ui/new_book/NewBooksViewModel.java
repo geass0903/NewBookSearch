@@ -13,6 +13,7 @@ import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
+import jp.gr.java_conf.nuranimation.new_book_search.model.repository.BookRepository;
 
 @SuppressWarnings("WeakerAccess")
 public class NewBooksViewModel extends AndroidViewModel {
@@ -39,7 +40,7 @@ public class NewBooksViewModel extends AndroidViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mBooks.postValue(AppDatabase.getInstance(context).bookDao().loadAllBooks());
+                mBooks.postValue(BookRepository.getInstance().loadAllBooks(context));
             }
         }).start();
     }

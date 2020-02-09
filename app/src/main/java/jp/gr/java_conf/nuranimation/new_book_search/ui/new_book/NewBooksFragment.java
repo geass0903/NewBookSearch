@@ -25,13 +25,13 @@ import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentNewBooks
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog.ProgressDialogFragment;
 
 public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerViewAdapter.OnItemClickListener, ProgressDialogFragment.OnProgressDialogListener {
     private static final String TAG = NewBooksFragment.class.getSimpleName();
     private static final boolean D = true;
 
+    private static final int REQUEST_CODE_PROGRESS_DIALOG = 101;
     private NewBooksViewModel newBooksViewModel;
 
     @Override
@@ -44,7 +44,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         newBooksViewModel = ViewModelProviders.of(this).get(NewBooksViewModel.class);
-
         final FragmentNewBooksBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_books, container, false);
         binding.setLifecycleOwner(this);
         binding.setViewModel(newBooksViewModel);
@@ -58,14 +57,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (D) Log.d(TAG, "onViewCreated");
-        if (savedInstanceState == null && getArguments() != null) {
-            NewBooksFragmentArgs args = NewBooksFragmentArgs.fromBundle(getArguments());
-            boolean result = args.getResult();
-            if (D) Log.d(TAG, "onViewCreated" + result);
-            if (result) {
-                newBooksViewModel.loadAllBooks();
-            }
-        }
     }
 
 
@@ -108,7 +99,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_action_reload) {
             NewBooksFragmentDirections.NewBooksToProgress actionToProgress
-                    = NewBooksFragmentDirections.newBooksToProgress(ProgressDialogViewModel.TYPE_RELOAD, getString(R.string.dialog_title_reload));
+                    = NewBooksFragmentDirections.newBooksToProgress(REQUEST_CODE_PROGRESS_DIALOG,ProgressDialogFragment.TYPE_RELOAD,getString(R.string.dialog_title_reload));
             NavHostFragment.findNavController(this).navigate(actionToProgress);
         }
         return super.onOptionsItemSelected(item);
@@ -128,7 +119,7 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
 
     @Override
     public void onProgressDialogSucceeded(int requestCode, Result result) {
-        if(requestCode == ProgressDialogFragment.REQUEST_CODE_PROGRESS_DIALOG){
+        if(requestCode == REQUEST_CODE_PROGRESS_DIALOG){
             if (D) Log.d(TAG, "onProgressDialogSucceeded : " + result);
             if(result.isSuccess()){
                 newBooksViewModel.loadAllBooks();
