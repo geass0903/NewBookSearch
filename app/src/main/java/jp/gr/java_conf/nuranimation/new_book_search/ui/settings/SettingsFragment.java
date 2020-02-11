@@ -1,9 +1,7 @@
 package jp.gr.java_conf.nuranimation.new_book_search.ui.settings;
 
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,22 +18,26 @@ import com.dropbox.core.android.Auth;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentSettingsBinding;
+import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.normal_dialog.NormalDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog.ProgressDialogFragment;
 
-public class SettingsFragment extends BaseFragment implements NormalDialogFragment.OnNormalDialogListener{
+public class SettingsFragment extends BaseFragment implements NormalDialogFragment.OnNormalDialogListener, ProgressDialogFragment.OnProgressDialogListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
     private static final boolean D = true;
+
+    private static final String DROP_BOX_KEY = "sf7d9ckccl57xvf";
 
     private SettingsViewModel settingsViewModel;
 
     private static final int REQUEST_CODE_DROPBOX_LOGOUT = 101;
-    private static final int REQUEST_CODE_BACKUP_PROGRESS = 102;
-    private static final int REQUEST_CODE_RESTORE_PROGRESS = 103;
-    private static final String TAG_DROPBOX_LOGOUT = "SettingsFragment.TAG_DROPBOX_LOGOUT";
-    private static final String TAG_BACKUP_PROGRESS = "SettingsFragment.TAG_BACKUP_PROGRESS";
-    private static final String TAG_RESTORE_PROGRESS = "SettingsFragment.TAG_RESTORE_PROGRESS";
+    private static final int REQUEST_CODE_BACKUP         = 102;
+    private static final int REQUEST_CODE_RESTORE        = 103;
+
+    private boolean isRequestAuth = false;
+    private static final String KEY_REQUEST_AUTH = "SettingsFragment.KEY_REQUEST_AUTH";
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,6 +59,9 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (D) Log.d(TAG, "onViewCreated");
+        if(savedInstanceState != null){
+            isRequestAuth = savedInstanceState.getBoolean(KEY_REQUEST_AUTH);
+        }
     }
 
 
@@ -70,7 +75,8 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
     public void onResume() {
         super.onResume();
         if (D) Log.d(TAG, "onResume()");
-        settingsViewModel.checkAccessToken();
+        settingsViewModel.checkLogin(isRequestAuth);
+        isRequestAuth = false;
     }
 
     @Override
@@ -79,12 +85,17 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
         if (D) Log.d(TAG, "onPause()");
     }
 
-
-    public View.OnClickListener getOnClickListener(){
-        return mOnClickListener;
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_REQUEST_AUTH,isRequestAuth);
     }
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    public View.OnClickListener getOnClickListener(){
+        return onClickListener;
+    }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int id = v.getId();
@@ -92,11 +103,11 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
             switch (id){
                 case R.id.button_log_in:
                     if(D) Log.d(TAG,"log in");
-                    settingsViewModel.authDropbox();
+                    login();
                     break;
                 case R.id.button_log_out:
                     if(D) Log.d(TAG,"log out");
-                    popupLogoutDialog();
+                    logout();
                     break;
                 case R.id.button_backup:
                     if(D) Log.d(TAG,"backup");
@@ -107,56 +118,46 @@ public class SettingsFragment extends BaseFragment implements NormalDialogFragme
                     restore();
                     break;
             }
-
         }
     };
 
 
+    private void login(){
+        isRequestAuth = true;
+        Auth.startOAuth2Authentication(requireContext(), DROP_BOX_KEY);
+    }
+
+    private void logout(){
+        SettingsFragmentDirections.SettingsToDialog actionToDialog
+                = SettingsFragmentDirections.settingsToDialog(REQUEST_CODE_DROPBOX_LOGOUT,getString(R.string.dialog_title_log_out));
+        NavHostFragment.findNavController(this).navigate(actionToDialog);
+    }
 
     private void backup(){
         SettingsFragmentDirections.SettingsToProgress actionToProgress
-                = SettingsFragmentDirections.settingsToProgress(ProgressDialogViewModel.TYPE_BACKUP, getString(R.string.dialog_title_backup));
+                = SettingsFragmentDirections.settingsToProgress(REQUEST_CODE_BACKUP, ProgressDialogFragment.TYPE_BACKUP, getString(R.string.dialog_title_backup));
         NavHostFragment.findNavController(this).navigate(actionToProgress);
     }
 
     private void restore(){
         SettingsFragmentDirections.SettingsToProgress actionToProgress
-                = SettingsFragmentDirections.settingsToProgress(ProgressDialogViewModel.TYPE_RESTORE, getString(R.string.dialog_title_restore));
+                = SettingsFragmentDirections.settingsToProgress(REQUEST_CODE_RESTORE, ProgressDialogFragment.TYPE_RESTORE, getString(R.string.dialog_title_restore));
         NavHostFragment.findNavController(this).navigate(actionToProgress);
     }
 
-    private void popupLogoutDialog(){
-
-
-        SettingsFragmentDirections.SettingsToNormal actionToNormal
-                = SettingsFragmentDirections.settingsToNormal("");
-        NavHostFragment.findNavController(this).navigate(actionToNormal);
-
-
-/*
-        Bundle bundle = new Bundle();
-        bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.dialog_title_log_out));
-        bundle.putString(NormalDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-        bundle.putString(NormalDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-        bundle.putInt(NormalDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_DROPBOX_LOGOUT);
-        NormalDialogFragment.showNormalDialog(this, bundle, TAG_DROPBOX_LOGOUT);
- */
-    }
-
 
     @Override
-    public void onNormalDialogSucceeded(int requestCode, int resultCode, Bundle params) {
-        if(D) Log.d(TAG,"Log out");
+    public void onNormalDialogSucceeded(int requestCode, int resultCode) {
+        if(D) Log.d(TAG,"onNormalDialogSucceeded");
         if (requestCode == REQUEST_CODE_DROPBOX_LOGOUT && resultCode == DialogInterface.BUTTON_POSITIVE) {
             if(D) Log.d(TAG,"Log out");
-            settingsViewModel.deleteAccessToken();
+            settingsViewModel.logout();
         }
     }
 
+
     @Override
-    public void onNormalDialogCancelled(int requestCode, Bundle params) {
+    public void onProgressDialogSucceeded(int requestCode, Result result) {
 
     }
-
-
 }

@@ -10,46 +10,42 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.dropbox.core.android.Auth;
 
-import jp.gr.java_conf.nuranimation.new_book_search.model.preference.Preference;
 import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.DropboxApi;
 
 @SuppressWarnings("WeakerAccess")
 public class SettingsViewModel extends AndroidViewModel {
 
-    private static final String DROP_BOX_KEY = "sf7d9ckccl57xvf";
     private Context context;
-    private MutableLiveData<String> mToken;
+    private MutableLiveData<String> token;
 
 
     public SettingsViewModel(@NonNull Application application) {
         super(application);
         context = application.getApplicationContext();
-        mToken = new MutableLiveData<>();
+        token = new MutableLiveData<>();
     }
 
     public LiveData<String> getToken() {
-        return mToken;
-    }
-
-    public void authDropbox(){
-        DropboxApi.getInstance().startAuth(context);
+        return token;
     }
 
 
-    public void checkAccessToken(){
-        String token = Auth.getOAuth2Token();
-        if(token != null){
-            Preference.getInstance().setAccessToken(context, token);
-            mToken.postValue(token);
+    public void checkLogin(boolean isRequestAuth){
+        String token;
+        if(isRequestAuth){
+            token = Auth.getOAuth2Token();
+            if(token != null) {
+                DropboxApi.getInstance().setAccessToken(context, token);
+            }
         }else{
-            token = Preference.getInstance().getAccessToken(context);
-            mToken.postValue(token);
+            token = DropboxApi.getInstance().getAccessToken(context);
         }
+        this.token.postValue(token);
     }
 
-    public void deleteAccessToken(){
-        Preference.getInstance().deleteAccessToken(context);
-        mToken.postValue(null);
+    public void logout(){
+        DropboxApi.getInstance().deleteAccessToken(context);
+        this.token.postValue(null);
     }
 
 }
