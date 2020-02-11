@@ -8,6 +8,7 @@ import java.util.List;
 import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 
+@SuppressWarnings("WeakerAccess")
 public class KeywordRepository {
 
     private static  KeywordRepository keywordRepository;
@@ -23,9 +24,25 @@ public class KeywordRepository {
         return keywordRepository;
     }
 
+    public void registerKeyword(Context context, Keyword keyword){
+        AppDatabase.getInstance(context).keywordDao().registerKeyword(keyword);
+    }
+
+    public void deleteKeyword(Context context, Keyword keyword){
+        AppDatabase.getInstance(context).keywordDao().deleteKeyword(keyword);
+    }
+
+
+    public List<Keyword> loadKeywords(Context context){
+        return AppDatabase.getInstance(context).keywordDao().loadAllKeyword();
+    }
+
+    public void saveKeywords(Context context, List<Keyword> keywords){
+        AppDatabase.getInstance(context).keywordDao().replaceAllKeyword(keywords);
+    }
 
     public List<String> loadKeywordList(Context context){
-        List<Keyword> allKeyword = AppDatabase.getInstance(context).keywordDao().loadAllKeyword();
+        List<Keyword> allKeyword = loadKeywords(context);
         List<String> keywords = new ArrayList<>();
         for(Keyword keyword : allKeyword){
             if(!keywords.contains(keyword.getWord())){
@@ -40,7 +57,7 @@ public class KeywordRepository {
         for(String keyword : list){
             keywords.add(new Keyword(keyword));
         }
-        AppDatabase.getInstance(context).keywordDao().replaceAllKeyword(keywords);
+        saveKeywords(context, keywords);
     }
 
 }

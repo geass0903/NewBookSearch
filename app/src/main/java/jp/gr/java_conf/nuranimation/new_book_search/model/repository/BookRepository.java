@@ -1,5 +1,7 @@
 package jp.gr.java_conf.nuranimation.new_book_search.model.repository;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Books;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import retrofit2.Response;
@@ -45,6 +48,14 @@ public class BookRepository {
             bookRepository = new BookRepository();
         }
         return bookRepository;
+    }
+
+    public List<Item> loadAllBooks(Context context){
+        return AppDatabase.getInstance(context).bookDao().loadAllBooks();
+    }
+
+    public void replaceAllBooks(Context context,List<Item> books){
+        AppDatabase.getInstance(context).bookDao().replaceAll(books);
     }
 
 
