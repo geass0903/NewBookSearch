@@ -17,16 +17,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.FragmentKeywordsBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 import jp.gr.java_conf.nuranimation.new_book_search.ui.base.BaseFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment;
-import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.EditKeywordDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.normal_dialog.NormalDialogFragment;
+import jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.keyword_dialog.EditKeywordDialogFragment;
 
 
 public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerViewAdapter.OnItemClickListener, NormalDialogFragment.OnNormalDialogListener, EditKeywordDialogFragment.OnRegisterKeywordDialogListener {
@@ -34,13 +34,12 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
     private static final boolean D = true;
     private KeywordsViewModel keywordsViewModel;
 
-    private static final String TAG_REGISTER_KEYWORD = "KeywordsFragment.TAG_REGISTER_KEYWORD";
-    private static final String TAG_DELETE_KEYWORD = "KeywordsFragment.TAG_DELETE_KEYWORD";
     private static final int REQUEST_CODE_REGISTER_KEYWORD = 101;
     private static final int REQUEST_CODE_DELETE_KEYWORD   = 102;
 
     private static final String KEY_ID = "KeywordsFragment.KEY_ID";
-    private static final String KEY_WORD = "KeywordsFragment.KEY_WORD";
+    private int keyword_id = 0;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -65,6 +64,9 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (D) Log.d(TAG, "onViewCreated");
+        if(savedInstanceState != null) {
+            keyword_id = savedInstanceState.getInt(KEY_ID, 0);
+        }
     }
 
     @Override
@@ -87,6 +89,7 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(KEY_ID, 0);
     }
 
     @Override
@@ -106,22 +109,10 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
         if (item.getItemId() == R.id.menu_action_add) {
             if (isClickable()) {
                 waitClickable(500);
-                Bundle bundle = new Bundle();
-                ArrayList<String> keywordList = new ArrayList<>();
-                List<Keyword> list = keywordsViewModel.getKeywords().getValue();
-                if(list != null){
-                    for(Keyword keyword : list){
-                        if(!(keywordList.contains(keyword.getWord()))){
-                            keywordList.add(keyword.getWord());
-                        }
-                    }
-                }
-                bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.dialog_title_edit));
-                bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
-                bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-                bundle.putString(EditKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-                bundle.putInt(EditKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
-                EditKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
+                KeywordsFragmentDirections.KeywordsToEdit actionToEdit
+                        = KeywordsFragmentDirections.keywordsToEdit(REQUEST_CODE_REGISTER_KEYWORD);
+                keyword_id = 0;
+                NavHostFragment.findNavController(this).navigate(actionToEdit);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -132,31 +123,11 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
     public void onItemClick(KeywordsRecyclerViewAdapter adapter, int position, Keyword keyword) {
         if (isClickable()) {
             waitClickable(500);
-
-            Bundle params = new Bundle();
-            params.putInt(KEY_ID, keyword.getId());
-            params.putString(KEY_WORD, keyword.getWord());
-            if(D) Log.d(TAG,"id: " + keyword.getId());
-            if(D) Log.d(TAG,"word: " + keyword.getWord());
-            ArrayList<String> keywordList = new ArrayList<>();
-            List<Keyword> list = keywordsViewModel.getKeywords().getValue();
-            if(list != null){
-                for(Keyword word : list){
-                    if(!(keywordList.contains(word.getWord()))){
-                        keywordList.add(word.getWord());
-                    }
-                }
-            }
-            Bundle bundle = new Bundle();
-            bundle.putString(EditKeywordDialogFragment.KEY_TITLE, getString(R.string.dialog_title_edit));
-            bundle.putString(EditKeywordDialogFragment.KEY_WORD, keyword.getWord());
-            bundle.putStringArrayList(EditKeywordDialogFragment.KEY_WORD_LIST, keywordList);
-            bundle.putString(EditKeywordDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-            bundle.putString(EditKeywordDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-            bundle.putBundle(EditKeywordDialogFragment.KEY_PARAMS, params);
-            bundle.putInt(EditKeywordDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_REGISTER_KEYWORD);
-            EditKeywordDialogFragment.showRegisterKeywordDialog(this, bundle, TAG_REGISTER_KEYWORD);
-
+            KeywordsFragmentDirections.KeywordsToEdit actionToEdit
+                    = KeywordsFragmentDirections.keywordsToEdit(REQUEST_CODE_REGISTER_KEYWORD);
+            actionToEdit.setKeyword(keyword.getWord());
+            keyword_id = keyword.getId();
+            NavHostFragment.findNavController(this).navigate(actionToEdit);
 
         }
     }
@@ -165,61 +136,35 @@ public class KeywordsFragment extends BaseFragment implements KeywordsRecyclerVi
     public void onItemLongClick(KeywordsRecyclerViewAdapter adapter, int position, Keyword keyword) {
         if (isClickable()) {
             waitClickable(500);
-
-            Bundle params = new Bundle();
-            params.putInt(KEY_ID, keyword.getId());
-            params.putString(KEY_WORD, keyword.getWord());
-            if (D) Log.d(TAG, "id: " + keyword.getId());
-            if (D) Log.d(TAG, "word: " + keyword.getWord());
-            Bundle bundle = new Bundle();
-            bundle.putString(NormalDialogFragment.KEY_TITLE, getString(R.string.dialog_title_delete));
-            bundle.putString(NormalDialogFragment.KEY_POSITIVE_LABEL, getString(R.string.label_positive));
-            bundle.putString(NormalDialogFragment.KEY_NEGATIVE_LABEL, getString(R.string.label_negative));
-            bundle.putInt(NormalDialogFragment.KEY_REQUEST_CODE, REQUEST_CODE_DELETE_KEYWORD);
-            bundle.putBundle(NormalDialogFragment.KEY_PARAMS, params);
-            bundle.putBoolean(NormalDialogFragment.KEY_CANCELABLE, true);
-            NormalDialogFragment.showNormalDialog(this, bundle, TAG_DELETE_KEYWORD);
-
+            KeywordsFragmentDirections.KeywordsToDialog actionToDialog
+                    = KeywordsFragmentDirections.keywordsToDialog(REQUEST_CODE_DELETE_KEYWORD, getString(R.string.dialog_title_delete));
+            keyword_id = keyword.getId();
+            NavHostFragment.findNavController(this).navigate(actionToDialog);
         }
     }
 
     @Override
-    public void onRegister(int requestCode, int resultCode, String keyword, Bundle params) {
+    public void onRegister(int requestCode, int resultCode, String keyword) {
         if(requestCode == REQUEST_CODE_REGISTER_KEYWORD && resultCode == DialogInterface.BUTTON_POSITIVE){
-            int id = 0;
-            if(params != null){
-                id = params.getInt(KEY_ID,0);
-            }
-            if(id == 0){
+            if(keyword_id == 0){
                 if(D) Log.d(TAG,"register : " + keyword);
                 Keyword register = new Keyword(keyword);
                 keywordsViewModel.registerKeyword(register);
             }else{
                 if(D) Log.d(TAG,"update : " + keyword);
                 Keyword update = new Keyword(keyword);
-                update.setId(id);
+                update.setId(keyword_id);
                 keywordsViewModel.registerKeyword(update);
             }
         }
     }
 
     @Override
-    public void onCancelled(int requestCode, Bundle params) {
-
-    }
-
-    @Override
-    public void onNormalDialogSucceeded(int requestCode, int resultCode, Bundle params) {
-        if(requestCode == REQUEST_CODE_DELETE_KEYWORD && resultCode == DialogInterface.BUTTON_POSITIVE && params != null){
-            int id = params.getInt(KEY_ID);
-            String word = params.getString(KEY_WORD);
-            Keyword keyword = new Keyword(id,word);
+    public void onNormalDialogSucceeded(int requestCode, int resultCode) {
+        if(requestCode == REQUEST_CODE_DELETE_KEYWORD && resultCode == DialogInterface.BUTTON_POSITIVE){
+            Keyword keyword = new Keyword(keyword_id, "delete");
             keywordsViewModel.deleteKeyword(keyword);
         }
     }
 
-    @Override
-    public void onNormalDialogCancelled(int requestCode, Bundle params) {
-
-    }
 }

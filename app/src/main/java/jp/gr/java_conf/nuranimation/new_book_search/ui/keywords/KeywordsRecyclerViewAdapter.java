@@ -14,14 +14,12 @@ import java.util.List;
 import jp.gr.java_conf.nuranimation.new_book_search.databinding.ItemKeywordBinding;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Keyword;
 
-
+@SuppressWarnings("WeakerAccess")
 public class KeywordsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener, View.OnLongClickListener{
 
     private List<Keyword> keywords;
-    private RecyclerView mRecyclerView;
-    private OnItemClickListener mListener;
-
-
+    private RecyclerView recyclerView;
+    private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(KeywordsRecyclerViewAdapter adapter, int position, Keyword keyword);
@@ -35,13 +33,13 @@ public class KeywordsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        mRecyclerView= recyclerView;
+        this.recyclerView = recyclerView;
     }
 
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
-        mRecyclerView = null;
+        this.recyclerView = null;
     }
 
 
@@ -72,26 +70,26 @@ public class KeywordsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onClick(View view) {
-        if(mRecyclerView != null && mListener != null){
-            int position = mRecyclerView.getChildAdapterPosition(view);
+        if(recyclerView != null && onItemClickListener != null){
+            int position = recyclerView.getChildAdapterPosition(view);
             Keyword keyword = keywords.get(position);
-            mListener.onItemClick(this, position, keyword);
+            onItemClickListener.onItemClick(this, position, keyword);
         }
     }
 
     @Override
     public boolean onLongClick(View view) {
-        if(mRecyclerView != null && mListener != null){
-            int position = mRecyclerView.getChildAdapterPosition(view);
+        if(recyclerView != null && onItemClickListener != null){
+            int position = recyclerView.getChildAdapterPosition(view);
             Keyword keyword = keywords.get(position);
-            mListener.onItemLongClick(this, position, keyword);
+            onItemClickListener.onItemLongClick(this, position, keyword);
             return true;
         }
         return false;
     }
 
     public void setClickListener(OnItemClickListener listener){
-        this.mListener = listener;
+        this.onItemClickListener = listener;
     }
 
     @BindingAdapter({"items"})
@@ -111,7 +109,6 @@ public class KeywordsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         final ItemKeywordBinding binding;
-
         ItemViewHolder(ItemKeywordBinding binding){
             super(binding.getRoot());
             this.binding = binding;
