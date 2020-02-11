@@ -1,10 +1,11 @@
 package jp.gr.java_conf.nuranimation.new_book_search.model.usecase;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.SearchMatchV2;
@@ -23,7 +24,7 @@ public class DropboxApi {
 
     private static DropboxApi dropboxApi;
 
-    private static final String DROP_BOX_KEY = "sf7d9ckccl57xvf";
+    private static final String KEY_ACCESS_TOKEN = "DropboxApi.KEY_ACCESS_TOKEN";
     private static final String APP_NAME = "NewBookSearch";
     private static final String CLIENT_IDENTIFIER = APP_NAME + File.separator + "1.0";
     private static final String DROPBOX_APP_DIR_PATH = File.separator + APP_NAME + File.separator;
@@ -38,11 +39,20 @@ public class DropboxApi {
         return dropboxApi;
     }
 
-    public void startAuth(Context context){
-        Auth.startOAuth2Authentication(context, DROP_BOX_KEY);
+    public String getAccessToken(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        return sharedPreferences.getString(KEY_ACCESS_TOKEN, null);
     }
 
+    public void setAccessToken(Context context, String token){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        sharedPreferences.edit().putString(KEY_ACCESS_TOKEN, token).apply();
+    }
 
+    public void deleteAccessToken(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        sharedPreferences.edit().remove(KEY_ACCESS_TOKEN).apply();
+    }
 
     public void upload(String token, File file) throws DbxException, IOException {
         if (token == null) {
