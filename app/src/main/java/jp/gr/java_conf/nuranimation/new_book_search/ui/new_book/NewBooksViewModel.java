@@ -2,8 +2,6 @@ package jp.gr.java_conf.nuranimation.new_book_search.ui.new_book;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -18,35 +16,27 @@ import jp.gr.java_conf.nuranimation.new_book_search.model.repository.BookReposit
 public class NewBooksViewModel extends AndroidViewModel {
 
     private Context context;
-    private MutableLiveData<List<Item>> mBooks;
+    private MutableLiveData<List<Item>> items;
 
 
     public NewBooksViewModel(@NonNull Application application) {
         super(application);
         context = application.getApplicationContext();
-        if(mBooks != null) {
-            Log.d("NewBooksViewModel", "mBooks" + mBooks.getValue());
-        }
-        mBooks = new MutableLiveData<>();
+        items = new MutableLiveData<>();
         loadAllBooks();
     }
 
     public LiveData<List<Item>> getBooks() {
-        return mBooks;
+        return items;
     }
 
     public void loadAllBooks(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mBooks.postValue(BookRepository.getInstance().loadAllBooks(context));
+                items.postValue(BookRepository.getInstance().loadAllBooks(context));
             }
         }).start();
-    }
-
-    @Override
-    protected void onCleared() {
-        Log.d("NewBooksViewModel", "onCleared()");
     }
 
 

@@ -47,9 +47,9 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
         final FragmentNewBooksBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_books, container, false);
         binding.setLifecycleOwner(this);
         binding.setViewModel(newBooksViewModel);
-        NewBooksRecyclerViewAdapter mRecyclerViewAdapter = new NewBooksRecyclerViewAdapter(new ArrayList<Item>());
-        mRecyclerViewAdapter.setClickListener(this);
-        binding.recyclerView.setAdapter(mRecyclerViewAdapter);
+        NewBooksRecyclerViewAdapter adapter = new NewBooksRecyclerViewAdapter(new ArrayList<Item>());
+        adapter.setClickListener(this);
+        binding.recyclerView.setAdapter(adapter);
         return binding.getRoot();
     }
 
@@ -63,7 +63,6 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (D) Log.d(TAG, "onActivityCreated");
     }
 
     @Override
@@ -98,9 +97,12 @@ public class NewBooksFragment extends BaseFragment implements NewBooksRecyclerVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_action_reload) {
-            NewBooksFragmentDirections.NewBooksToProgress actionToProgress
-                    = NewBooksFragmentDirections.newBooksToProgress(REQUEST_CODE_PROGRESS_DIALOG,ProgressDialogFragment.TYPE_RELOAD,getString(R.string.dialog_title_reload));
-            NavHostFragment.findNavController(this).navigate(actionToProgress);
+            if (isClickable()) {
+                waitClickable(500);
+                NewBooksFragmentDirections.NewBooksToProgress actionToProgress
+                        = NewBooksFragmentDirections.newBooksToProgress(REQUEST_CODE_PROGRESS_DIALOG, ProgressDialogFragment.TYPE_RELOAD, getString(R.string.dialog_title_reload));
+                NavHostFragment.findNavController(this).navigate(actionToProgress);
+            }
         }
         return super.onOptionsItemSelected(item);
     }

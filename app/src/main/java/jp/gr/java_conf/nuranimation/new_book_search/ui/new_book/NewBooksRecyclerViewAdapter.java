@@ -28,8 +28,8 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private List<Item> items;
 
-    private RecyclerView mRecyclerView;
-    private OnItemClickListener mListener;
+    private RecyclerView recyclerView;
+    private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(NewBooksRecyclerViewAdapter adapter, int position, Item data);
@@ -42,13 +42,13 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        mRecyclerView= recyclerView;
+        this.recyclerView = recyclerView;
     }
 
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
-        mRecyclerView = null;
+        this.recyclerView = null;
     }
 
 
@@ -78,15 +78,15 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onClick(View view) {
-        if(mRecyclerView != null && mListener != null){
-            int position = mRecyclerView.getChildAdapterPosition(view);
+        if(recyclerView != null && onItemClickListener != null){
+            int position = recyclerView.getChildAdapterPosition(view);
             Item data = items.get(position);
-            mListener.onItemClick(this, position, data);
+            onItemClickListener.onItemClick(this, position, data);
         }
     }
 
     public void setClickListener(OnItemClickListener listener){
-        this.mListener = listener;
+        this.onItemClickListener = listener;
     }
 
 
@@ -97,7 +97,6 @@ public class NewBooksRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         }
         if(recyclerView.getAdapter() instanceof NewBooksRecyclerViewAdapter) {
             NewBooksRecyclerViewAdapter adapter = (NewBooksRecyclerViewAdapter)recyclerView.getAdapter();
-
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(adapter.items,books),false);
             adapter.items = books;
             diffResult.dispatchUpdatesTo(adapter);
