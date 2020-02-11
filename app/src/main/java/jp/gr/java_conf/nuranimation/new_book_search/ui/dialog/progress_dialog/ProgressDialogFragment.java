@@ -1,4 +1,4 @@
-package jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog;
+package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -24,7 +24,9 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String TAG = ProgressDialogFragment.class.getSimpleName();
     private static final boolean D = true;
 
-    public static final int REQUEST_CODE_PROGRESS_DIALOG = 101;
+    public static final int TYPE_RELOAD  = 1;
+    public static final int TYPE_BACKUP  = 2;
+    public static final int TYPE_RESTORE = 3;
 
     private ProgressDialogViewModel progressDialogViewModel;
     private OnProgressDialogListener onProgressDialogListener;
@@ -45,6 +47,12 @@ public class ProgressDialogFragment extends DialogFragment {
                 throw new UnsupportedOperationException("Listener is not Implementation.");
             }
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onProgressDialogListener = null;
     }
 
     @NonNull
@@ -70,8 +78,9 @@ public class ProgressDialogFragment extends DialogFragment {
         progressDialogViewModel.getResult().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
-                if (result != null && progressDialogViewModel.getState() == ProgressDialogViewModel.STATE_COMPLETE) {
-                    onProgressDialogListener.onProgressDialogSucceeded(REQUEST_CODE_PROGRESS_DIALOG, result);
+                if (D) Log.d(TAG, " onChanged : " + result);
+                if (result != null) {
+                    onProgressDialogListener.onProgressDialogSucceeded(getRequestCode(), result);
                     dismiss();
                 }
             }
@@ -80,7 +89,7 @@ public class ProgressDialogFragment extends DialogFragment {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
 
-        if (args.getType() == ProgressDialogViewModel.TYPE_RELOAD) {
+        if (args.getType() == TYPE_RELOAD) {
             builder.setNegativeButton(R.string.label_negative, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -105,10 +114,30 @@ public class ProgressDialogFragment extends DialogFragment {
             if (getArguments() != null) {
                 ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
                 progressDialogViewModel.setResult(null);
-                progressDialogViewModel.start(args.getType());
+                switch (args.getType()){
+                    case TYPE_RELOAD:
+                        progressDialogViewModel.reload();
+                        break;
+                    case TYPE_BACKUP:
+                        progressDialogViewModel.backup();
+                        break;
+                    case TYPE_RESTORE:
+                        progressDialogViewModel.restore();
+                        break;
+                }
             }
         }
     }
+
+    private int getRequestCode() {
+        if(getArguments() != null) {
+            ProgressDialogFragmentArgs args = ProgressDialogFragmentArgs.fromBundle(getArguments());
+            return args.getRequestCode();
+        }
+        return -1;
+    }
+
+
 
 }
 

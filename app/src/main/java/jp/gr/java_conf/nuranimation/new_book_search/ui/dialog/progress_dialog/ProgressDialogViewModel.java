@@ -1,4 +1,4 @@
-package jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog;
+package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog;
 
 import android.app.Application;
 import android.content.Context;
@@ -18,10 +18,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import jp.gr.java_conf.nuranimation.new_book_search.R;
-import jp.gr.java_conf.nuranimation.new_book_search.model.database.AppDatabase;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Item;
 import jp.gr.java_conf.nuranimation.new_book_search.model.entity.Result;
-import jp.gr.java_conf.nuranimation.new_book_search.model.preference.Preference;
 import jp.gr.java_conf.nuranimation.new_book_search.model.repository.BookRepository;
 import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.DropboxApi;
 import jp.gr.java_conf.nuranimation.new_book_search.model.usecase.FileApi;
@@ -32,10 +30,6 @@ import jp.gr.java_conf.nuranimation.new_book_search.model.repository.KeywordRepo
 public class ProgressDialogViewModel extends AndroidViewModel {
     private static final String TAG = ProgressDialogViewModel.class.getSimpleName();
     private static final boolean D = true;
-
-    public static final int TYPE_RELOAD  = 1;
-    public static final int TYPE_BACKUP  = 2;
-    public static final int TYPE_RESTORE = 3;
 
     public static final int STATE_NONE = 0;
     public static final int STATE_PROGRESS = 1;
@@ -109,23 +103,19 @@ public class ProgressDialogViewModel extends AndroidViewModel {
         this.result.postValue(result);
     }
 
-    public void start(int type) {
-        switch (type) {
-            case TYPE_RELOAD:
-                reloadAsyncTask = new ReloadAsyncTask(this);
-                reloadAsyncTask.execute();
-                break;
-            case TYPE_BACKUP:
-                backupAsyncTask = new BackupAsyncTask(this);
-                backupAsyncTask.execute();
-                break;
-            case TYPE_RESTORE:
-                restoreAsyncTask = new RestoreAsyncTask(this);
-                restoreAsyncTask.execute();
-                break;
-            default:
-                break;
-        }
+    public void reload(){
+        reloadAsyncTask = new ReloadAsyncTask(this);
+        reloadAsyncTask.execute();
+    }
+
+    public void backup(){
+        backupAsyncTask = new BackupAsyncTask(this);
+        backupAsyncTask.execute();
+    }
+
+    public void restore(){
+        restoreAsyncTask = new RestoreAsyncTask(this);
+        restoreAsyncTask.execute();
     }
 
 
@@ -191,8 +181,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             }
 
             if(!isCancelled()){
-                AppDatabase database = AppDatabase.getInstance(model.context);
-                database.bookDao().replaceAll(books);
+                BookRepository.getInstance().replaceAllBooks(model.context, books);
                 return Result.Success();
             }else{
                 return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
@@ -248,7 +237,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
                 if (isCancelled()) {
                     return Result.Error(Result.ERROR_CODE_CANCELED, model.context.getString(R.string.message_error_canceled));
                 }
-                String token = Preference.getInstance().getAccessToken(model.context);
+                String token = DropboxApi.getInstance().getAccessToken(model.context);
                 DropboxApi.getInstance().upload(token, file);
                 return Result.Success();
             } catch (IOException e) {
@@ -310,7 +299,7 @@ public class ProgressDialogViewModel extends AndroidViewModel {
             File file = new File(model.context.getFilesDir(), FILE_NAME);
 
             try{
-                String token = Preference.getInstance().getAccessToken(model.context);
+                String token = DropboxApi.getInstance().getAccessToken(model.context);
                 DropboxApi.getInstance().download(token, file);
                 List<String> list = FileApi.getInstance().read(file);
                 if(isCancelled()){
