@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="SpUsage"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-    <TextView
-        android:id="@+id/edit_error_message"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.keyword_dialog.EditKeywordDialogViewModel" />
+        <variable
+            name="fragment"
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.keyword_dialog.EditKeywordDialogFragment" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_normal"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:textSize="@dimen/text_size_normal"
-        android:textColor="#FFFF0000" />
-    <EditText
-        style="@style/edit_text"
-        tools:targetApi="o"
-        android:id="@+id/edit_keyword_view"
-        android:autofillHints="@string/title_keywords"
-        android:hint="@string/title_keywords" />
-
-
-
-
-</LinearLayout>
+        android:layout_height="wrap_content" >
+        <TextView
+            android:id="@+id/edit_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textSize="@dimen/text_size_normal"
+            android:textColor="#FFFF0000"
+            android:text="@{viewModel.errorMessage}"
+            />
+        <EditText
+            style="@style/edit_text"
+            tools:targetApi="o"
+            android:id="@+id/edit_keyword_view"
+            android:autofillHints="@string/title_keywords"
+            android:hint="@string/title_keywords"
+            android:text="@{viewModel.tmpKeyword}"
+            app:addTextChangedListener="@{fragment.getEditTextWatcher}"
+            />
+    </LinearLayout>
+</layout>

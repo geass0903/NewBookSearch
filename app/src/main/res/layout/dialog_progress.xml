@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <data>
         <variable
             name="viewModel"
-            type="jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogViewModel" />
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog.ProgressDialogViewModel" />
     </data>
 
     <LinearLayout
-        tools:ignore="SpUsage"
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.gr.java_conf.nuranimation.new_book_search.ui.jan_code_dialog.JanCodeDialogViewModel" />
+            type="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.jan_code_dialog.JanCodeDialogViewModel" />
     </data>
 
     <LinearLayout
