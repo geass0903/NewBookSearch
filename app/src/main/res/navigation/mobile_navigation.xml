@@ -10,7 +10,6 @@
         android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.new_book.NewBooksFragment"
         android:label="@string/title_new_books"
         tools:layout="@layout/fragment_new_books" >
-        <argument android:name="result" app:argType="boolean" android:defaultValue="false"/>
         <action
             android:id="@+id/new_books_to_progress"
             app:destination="@+id/progress" />
@@ -29,6 +28,9 @@
         <action
             android:id="@+id/keywords_to_edit"
             app:destination="@id/edit_keyword" />
+        <action
+            android:id="@+id/keywords_to_dialog"
+            app:destination="@id/dialog" />
     </fragment>
 
     <fragment
@@ -41,61 +43,44 @@
             android:id="@+id/settings_to_progress"
             app:destination="@id/progress" />
         <action
-            android:id="@+id/settings_to_normal"
-            app:destination="@id/normal" />
+            android:id="@+id/settings_to_dialog"
+            app:destination="@id/dialog" />
     </fragment>
 
 
     <dialog
-        android:id="@+id/normal"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.NormalDialogFragment">
+        android:id="@+id/dialog"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.normal_dialog.NormalDialogFragment">
+        <argument android:name="request_code" app:argType="integer" />
         <argument android:name="title" app:argType="string" />
+        <argument android:name="message" app:argType="string" app:nullable="true" android:defaultValue="@null"/>
     </dialog>
-
 
     <dialog
         android:id="@+id/progress"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.progress_dialog.ProgressDialogFragment"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.progress_dialog.ProgressDialogFragment"
         tools:layout="@layout/dialog_progress" >
+        <argument android:name="request_code" app:argType="integer" />
         <argument android:name="type" app:argType="integer" />
         <argument android:name="title" app:argType="string" />
         <argument android:name="message" app:argType="string" app:nullable="true" android:defaultValue="@null"/>
         <argument android:name="progress" app:argType="string" app:nullable="true" android:defaultValue="@null"/>
-        <action
-            android:id="@+id/progress_to_new_books"
-            app:popUpTo="@id/new_books"
-            app:popUpToInclusive="true"
-            app:destination="@+id/new_books" />
-        <action
-            android:id="@+id/progress_to_settings"
-            app:popUpTo="@id/settings"
-            app:popUpToInclusive="true"
-            app:destination="@+id/settings" />
     </dialog>
 
     <dialog
         android:id="@+id/edit_keyword"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.EditKeywordDialogFragment"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.keyword_dialog.EditKeywordDialogFragment"
         tools:layout="@layout/dialog_edit_keyword" >
-        <argument android:name="keyword" app:argType="string"/>
-        <action
-            android:id="@+id/edit_to_keywords"
-            app:popUpTo="@id/keywords"
-            app:popUpToInclusive="true"
-            app:destination="@+id/keywords" />
+        <argument android:name="request_code" app:argType="integer" />
+        <argument android:name="keyword" app:argType="string" app:nullable="true" android:defaultValue="@null"/>
     </dialog>
 
     <dialog
         android:id="@+id/jan_code"
-        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.jan_code_dialog.JanCodeDialogFragment"
+        android:name="jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.jan_code_dialog.JanCodeDialogFragment"
         tools:layout="@layout/dialog_jan_code" >
         <argument android:name="isbn" app:argType="string" />
         <argument android:name="title" app:argType="string" />
-        <action
-            android:id="@+id/jan_code_to_new_books"
-            app:popUpTo="@id/new_books"
-            app:popUpToInclusive="true"
-            app:destination="@+id/new_books" />
     </dialog>
 
 </navigation>
