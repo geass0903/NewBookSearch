@@ -39,8 +39,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name="jp.gr.java_conf.nuranimation.new_book_search.service.NewBookService" />
-
     </application>
 
 </manifest>
