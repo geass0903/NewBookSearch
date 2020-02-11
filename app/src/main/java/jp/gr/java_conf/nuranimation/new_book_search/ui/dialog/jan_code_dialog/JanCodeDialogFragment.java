@@ -1,4 +1,4 @@
-package jp.gr.java_conf.nuranimation.new_book_search.ui.jan_code_dialog;
+package jp.gr.java_conf.nuranimation.new_book_search.ui.dialog.jan_code_dialog;
 
 import android.app.Dialog;
 import android.graphics.Bitmap;
