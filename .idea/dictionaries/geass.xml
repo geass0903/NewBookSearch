@@ -2,6 +2,8 @@
   <dictionary name="geass">
     <words>
       <w>ckccl</w>
+      <w>fullwidth</w>
+      <w>halfwidth</w>
     </words>
   </dictionary>
 </component>
